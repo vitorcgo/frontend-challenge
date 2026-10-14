@@ -1,0 +1,3 @@
+# O postinstall do msw só copia o worker, que já fica versionado em public/.
+allowBuilds:
+  msw: false
