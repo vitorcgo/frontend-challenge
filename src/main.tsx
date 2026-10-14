@@ -9,16 +9,8 @@ import './index.css'
 
 async function enableMocking() {
   if (!env.enableMocks) return
-
-  const { worker } = await import('./mocks/browser')
-  const apiPath = new URL(env.apiUrl, window.location.origin).pathname
-
-  await worker.start({
-    // Só avisa sobre chamadas da API sem handler; assets e fontes passam direto.
-    onUnhandledRequest(request, print) {
-      if (new URL(request.url).pathname.startsWith(apiPath)) print.warning()
-    },
-  })
+  const { startMocks } = await import('./mocks/browser')
+  await startMocks()
 }
 
 const rootElement = document.getElementById('root')
