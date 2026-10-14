@@ -1,6 +1,7 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
+import { HeaderSearch } from './header-search'
 import { cn } from '@/lib/utils'
 import { isMarketPath, paths } from './routes'
 
@@ -69,6 +70,7 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
         </nav>
 
         <div className="flex items-center gap-7">
+          <HeaderSearch />
           <a
             href={paths.cart}
             aria-label={cartCount > 0 ? `Carrinho, ${cartCount} itens` : 'Carrinho'}

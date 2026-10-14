@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { NETWORKS, NFT_CATEGORIES, NFT_SORTS, NFT_TABS, type NftListQuery } from '@/api/contracts'
 
+/** Mesmo limite do contrato da API; os campos de busca usam este valor em `maxLength`. */
+export const SEARCH_MAX_LENGTH = 80
+
 const ethParam = z.string().regex(/^\d+(\.\d{1,18})?$/)
 
 /**
@@ -8,7 +11,12 @@ const ethParam = z.string().regex(/^\d+(\.\d{1,18})?$/)
  * Valores inválidos digitados na URL caem no padrão em vez de quebrar a página.
  */
 export const catalogSearchSchema = z.object({
-  search: z.string().trim().max(80).optional().catch(undefined),
+  // Termo longo demais é cortado, nunca descartado: descartar mostraria o catálogo inteiro como se não houvesse busca.
+  search: z
+    .string()
+    .transform((value) => value.trim().slice(0, SEARCH_MAX_LENGTH) || undefined)
+    .optional()
+    .catch(undefined),
   category: z.array(z.enum(NFT_CATEGORIES)).optional().catch(undefined),
   network: z.array(z.enum(NETWORKS)).optional().catch(undefined),
   priceMin: ethParam.optional().catch(undefined),

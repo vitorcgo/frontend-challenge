@@ -71,9 +71,7 @@ function sortNfts(nfts: NftRecord[], query: ListQuery): NftRecord[] {
     case 'name-asc':
       return sorted.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
     default:
-      return query.tab === 'trending'
-        ? sorted.sort((a, b) => b.trendingScore - a.trendingScore)
-        : sorted.sort((a, b) => b.listedAt.localeCompare(a.listedAt))
+      return sorted.sort((a, b) => b.listedAt.localeCompare(a.listedAt))
   }
 }
 

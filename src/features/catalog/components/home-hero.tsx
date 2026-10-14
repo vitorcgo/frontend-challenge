@@ -6,15 +6,15 @@ import { useMediaQuery } from '@/hooks/use-media-query'
 
 const HERO_IMAGE = { small: '/images/nfts/monkey-varsity-480.webp', large: '/images/nfts/monkey-varsity-960.webp' }
 const HERO_THUMB = '/images/nfts/gorilla-bucket-hat-480.webp'
-const HERO_ALT = 'Emerald Ape #042, macaco de óculos redondos e jaqueta college verde'
+const HERO_ALT = 'Ilustração de um macaco de óculos redondos e jaqueta college verde'
 
-/** Indicador do carrossel do Figma: decorativo, o banner tem um único slide. */
+/** Indicador do carrossel do Figma (três pontos iguais): decorativo, o banner tem um único slide. */
 function Dots({ className }: { className?: string }) {
   return (
     <span aria-hidden className={className}>
       <span className="size-2 rounded-full bg-brand" />
-      <span className="size-2 rounded-full bg-brand/40" />
-      <span className="size-2 rounded-full bg-brand/40" />
+      <span className="size-2 rounded-full bg-brand" />
+      <span className="size-2 rounded-full bg-brand" />
     </span>
   )
 }
