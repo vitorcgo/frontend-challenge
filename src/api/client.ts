@@ -1,5 +1,6 @@
 import axios, { isCancel } from 'axios'
 import { env } from '@/config/env'
+import { apiReady } from '@/lib/api-ready'
 import { toApiError } from './errors'
 import { getSessionToken } from './session-token'
 
@@ -12,7 +13,8 @@ export const apiClient = axios.create({
   paramsSerializer: { indexes: null },
 })
 
-apiClient.interceptors.request.use((config) => {
+apiClient.interceptors.request.use(async (config) => {
+  await apiReady
   const token = getSessionToken()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
   return config

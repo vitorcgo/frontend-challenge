@@ -1,10 +1,13 @@
+import { Link } from '@tanstack/react-router'
 import { useId, useState, type FormEvent } from 'react'
+import type { NftCategory } from '@/api/contracts'
 import socialFacebook from '@/assets/brands/social-facebook.svg'
 import socialInstagram from '@/assets/brands/social-instagram.svg'
 import socialLinkedin from '@/assets/brands/social-linkedin.svg'
 import socialTwitter from '@/assets/brands/social-twitter.svg'
 import socialYoutube from '@/assets/brands/social-youtube.svg'
 import { Button } from '@/components/ui/button'
+import { CATEGORY_LABELS } from '@/features/catalog/labels'
 
 const FEATURES = [
   { mark: 'W', title: 'Segurança da carteira', text: 'Proteja sua carteira e colecione arte digital verificada com confiança.' },
@@ -12,14 +15,16 @@ const FEATURES = [
   { mark: 'D', title: 'Alertas de lançamentos', text: 'Receba calendários de cunhagem, novidades de listas de acesso e análises do mercado.' },
 ]
 
-const LINK_COLUMNS = [
+const TEXT_COLUMNS = [
   { title: 'Meu perfil', items: ['Meu perfil', 'Minha coleção', 'Atividade', 'Estúdio do criador', 'Lista de interesse'] },
   {
     title: 'Central de ajuda',
     items: ['Central de ajuda', 'Como comprar NFTs', 'Carteira e segurança', 'Política do mercado', 'Denunciar item'],
   },
-  { title: 'Coleções', items: ['Arte digital', 'Fotografia', 'Música', 'Arte 3D', 'Utilidade'] },
 ]
+
+// As coleções do rodapé abrem o catálogo já filtrado pela categoria.
+const FOOTER_CATEGORIES: NftCategory[] = ['arte-digital', 'fotografia', 'musica', 'arte-3d', 'utilidade']
 
 const SOCIALS = [
   { name: 'Facebook', src: socialFacebook },
@@ -109,7 +114,7 @@ export function SiteFooter() {
 
       <div className="bg-surface-card p-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_228px] lg:gap-10 xl:gap-[124px]">
-          {LINK_COLUMNS.map((column) => (
+          {TEXT_COLUMNS.map((column) => (
             <div key={column.title} className="flex flex-col gap-2 text-cream">
               <h2 className="text-lg leading-4 font-bold">{column.title}</h2>
               <ul className="text-sm leading-[30px]">
@@ -119,6 +124,23 @@ export function SiteFooter() {
               </ul>
             </div>
           ))}
+          <div className="flex flex-col gap-2 text-cream">
+            <h2 className="text-lg leading-4 font-bold">Coleções</h2>
+            <ul className="text-sm leading-[30px]">
+              {FOOTER_CATEGORIES.map((category) => (
+                <li key={category}>
+                  <Link
+                    to="/"
+                    search={{ category: [category] }}
+                    hash="mercado"
+                    className="rounded-sm hover:text-accent-text"
+                  >
+                    {CATEGORY_LABELS[category]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-5">

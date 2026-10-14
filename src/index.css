@@ -3,6 +3,9 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/roboto-mono/wght.css";
 
+/* Tema único: as classes dark: dos componentes do shadcn nunca se aplicam, independente do sistema. */
+@custom-variant dark (&:is(.dark *));
+
 /* Tokens do Figma (variáveis do arquivo "Marketplace de NFTs GreenMint"). */
 @theme {
   --font-sans: "Roboto Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -46,6 +49,17 @@
 
   --shadow-card: 0 6px 20px 0 rgb(10 6 4 / 0.45);
   --shadow-soft: 0 0 10px 0 rgb(10 6 4 / 0.45);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 /* Papéis semânticos usados pelos componentes do shadcn/ui. */
