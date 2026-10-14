@@ -3,6 +3,7 @@ import {
   NETWORKS,
   NFT_CATEGORIES,
   nftListQuerySchema,
+  type FeaturedNftResponse,
   type Network,
   type Nft,
   type NftCategory,
@@ -10,7 +11,7 @@ import {
 } from '@/api/contracts'
 import { compareEth } from '@/lib/eth'
 import { read } from '../db'
-import type { NftRecord } from '../fixtures/nfts'
+import { FEATURED_NFT, type NftRecord } from '../fixtures/nfts'
 import { API, notFound, param, route, validate } from '../http'
 import { toNft, toNftSummary } from '../mappers'
 import { getScenario } from '../scenarios'
@@ -109,6 +110,20 @@ export const nftHandlers = [
           networks: countBy<Network>(NETWORKS, applyFilters(catalog, query, 'network'), (n) => n.network),
           priceRange: priceRange(catalog),
         },
+      })
+    }),
+  ),
+
+  // Antes de `/nfts/:id`, senão "featured" seria lido como um id.
+  http.get(
+    `${API}/nfts/featured`,
+    route(() => {
+      const nft = getScenario() === 'empty-catalog' ? undefined : read((db) => db.nfts.find((item) => item.id === FEATURED_NFT.id))
+      if (!nft) throw notFound('Nenhum NFT em destaque no momento.')
+      return HttpResponse.json<FeaturedNftResponse>({
+        nft: toNftSummary(nft),
+        headline: FEATURED_NFT.headline,
+        subtitle: FEATURED_NFT.subtitle,
       })
     }),
   ),

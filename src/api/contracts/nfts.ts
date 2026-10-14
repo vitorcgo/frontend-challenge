@@ -100,6 +100,13 @@ export const nftListQuerySchema = z
   })
 export type NftListQuery = z.input<typeof nftListQuerySchema>
 
+/** NFT escolhido pela curadoria para o bloco "NFT em destaque" da Início. */
+export interface FeaturedNftResponse {
+  nft: NftSummary
+  headline: string
+  subtitle: string
+}
+
 export interface NftListResponse extends Paginated<NftSummary> {
   facets: {
     categories: Record<NftCategory, number>

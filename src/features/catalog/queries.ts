@@ -1,6 +1,6 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import type { NftListQuery } from '@/api/contracts'
-import { getNft, listNfts } from '@/api/endpoints/nfts'
+import { getFeaturedNft, getNft, listNfts } from '@/api/endpoints/nfts'
 
 /** Remove valores vazios para que a mesma busca gere sempre a mesma chave de cache. */
 function normalize(query: NftListQuery): NftListQuery {
@@ -15,6 +15,14 @@ export const nftKeys = {
   list: (query: NftListQuery) => [...nftKeys.lists(), normalize(query)] as const,
   details: () => [...nftKeys.all, 'detail'] as const,
   detail: (id: string) => [...nftKeys.details(), id] as const,
+  featured: () => [...nftKeys.all, 'featured'] as const,
+}
+
+export function featuredNftQueryOptions() {
+  return queryOptions({
+    queryKey: nftKeys.featured(),
+    queryFn: ({ signal }) => getFeaturedNft(signal),
+  })
 }
 
 export function nftListQueryOptions(query: NftListQuery) {

@@ -86,6 +86,9 @@ const ROWS: Row[] = [
   ['Cedar Baron #931', 'gorilla-turtleneck', 'arte-digital', 'ethereum', '0.05', null, false, false, false],
 ]
 
+/** NFT do bloco "NFT em destaque" (o Figma mostra o Sage Nomad). */
+export const FEATURED_NFT = { id: 'sage-nomad-009', headline: 'NFT EM DESTAQUE', subtitle: 'OFERTA LIMITADA' }
+
 const FIRST_LISTED_AT = Date.parse('2026-10-10T12:00:00.000Z')
 const LISTING_INTERVAL_MS = 14 * 60 * 60 * 1000
 const SOLD_OUT_INDEX = ROWS.length - 1

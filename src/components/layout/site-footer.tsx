@@ -73,7 +73,7 @@ function NewsletterForm() {
 
 export function SiteFooter() {
   return (
-    <footer className="mx-auto mt-20 hidden w-full max-w-[1200px] px-6 md:block xl:px-0">
+    <footer className="mx-auto mt-24 hidden w-full max-w-[1200px] px-6 md:block xl:px-0">
       <section aria-label="Destaques da Kurio" className="bg-surface-card p-8">
         <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_357px] lg:items-stretch lg:gap-0">
           {FEATURES.map((feature, index) => (

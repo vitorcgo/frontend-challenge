@@ -14,6 +14,7 @@ import { hasActiveFilters, type CatalogSearch } from '../search'
 import { useCatalogQuery, useUpdateCatalogSearch } from '../use-catalog-search'
 import { CatalogFilters } from './catalog-filters'
 import { CatalogFiltersSheet } from './catalog-filters-sheet'
+import { FeaturedNft } from './featured-nft'
 import { CatalogPagination } from './catalog-pagination'
 import { NftCard, NftCardSkeleton } from './nft-card'
 
@@ -23,7 +24,7 @@ function SortSelect({ value, onChange }: { value: NftSort; onChange: (sort: NftS
   const labelId = useId()
   return (
     <div className="flex items-center gap-3">
-      <span id={labelId} className="text-body text-cream">
+      <span id={labelId} className="text-body whitespace-nowrap text-cream">
         Ordenar por:
       </span>
       <Select value={value} onValueChange={(next) => onChange(next as NftSort)}>
@@ -159,8 +160,9 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
       <h2 id={panelHeadingId} className="sr-only">
         Mercado de NFTs
       </h2>
-      <aside aria-label="Filtros do catálogo" className="hidden xl:block">
+      <aside aria-label="Filtros do catálogo" className="hidden flex-col gap-6 xl:flex">
         <CatalogFilters search={search} facets={data?.facets} className="bg-surface-card p-5" />
+        <FeaturedNft />
       </aside>
       <Tabs value={search.tab} onValueChange={(tab) => update({ tab: tab as NftTab })} className="min-w-0 gap-6 md:gap-8">
         {search.search && (
@@ -177,7 +179,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
             </button>
           </p>
         )}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-4">
           <TabsList
             variant="line"
             aria-label="Filtrar por lançamento"

@@ -1,6 +1,8 @@
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 import { CatalogSection } from '@/features/catalog/components/catalog-section'
 import { HomeHero } from '@/features/catalog/components/home-hero'
+import { HomePromos } from '@/features/catalog/components/home-promos'
+import { MintJournal } from '@/features/catalog/components/mint-journal'
 import { MobileCatalogSearch } from '@/features/catalog/components/mobile-catalog-search'
 import { CATALOG_DEFAULTS, catalogSearchSchema } from '@/features/catalog/search'
 
@@ -21,6 +23,8 @@ function HomePage() {
         <HomeHero />
       </div>
       <CatalogSection search={search} />
+      <HomePromos />
+      <MintJournal />
     </div>
   )
 }

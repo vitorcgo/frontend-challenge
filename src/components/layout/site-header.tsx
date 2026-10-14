@@ -57,19 +57,19 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
   return (
     <header className="mx-auto hidden w-full max-w-[1200px] px-6 pt-6 md:block xl:px-0">
       <div className="flex items-start justify-between gap-6">
-        <Link to="/" className="mt-2 w-[160px] shrink-0 rounded-sm text-sm font-bold tracking-logo text-cream">
+        <Link to="/" className="mt-2 shrink-0 rounded-sm text-sm font-bold tracking-logo text-cream xl:w-[160px]">
           KURIO
         </Link>
 
         <nav aria-label="Principal">
-          <ul className="flex items-start gap-6 lg:gap-10">
+          <ul className="flex items-start gap-5 lg:gap-10">
             {items.map((item) => (
               <NavLink key={item.label} item={item} />
             ))}
           </ul>
         </nav>
 
-        <div className="flex items-center gap-7">
+        <div className="flex items-center gap-4 xl:gap-7">
           <HeaderSearch />
           <a
             href={paths.cart}
