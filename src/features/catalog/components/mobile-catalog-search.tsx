@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import { Icon } from '@/components/icon'
+import { focusCatalogResults } from '../focus-results'
 import { SEARCH_MAX_LENGTH } from '../search'
 import { useCatalogSearch, useUpdateCatalogSearch } from '../use-catalog-search'
 import { CatalogFiltersSheet } from './catalog-filters-sheet'
@@ -34,7 +35,8 @@ export function MobileCatalogSearch() {
         role="search"
         onSubmit={(event) => {
           event.preventDefault()
-          update({ search: text.trim() || undefined })
+          // Enter é a intenção de ver os resultados; enquanto só digita, a página não rola.
+          void update({ search: text.trim() || undefined }).then(focusCatalogResults)
         }}
         className="flex min-w-0 flex-1 items-center gap-2 rounded-[10px] bg-surface-card px-3 text-muted-text focus-within:outline-2 focus-within:outline-accent-text"
       >

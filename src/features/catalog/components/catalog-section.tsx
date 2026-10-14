@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDelayedFlag } from '@/hooks/use-delayed-flag'
+import { useMediaQuery } from '@/hooks/use-media-query'
 import { pluralize } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { SORT_LABELS, TAB_LABELS } from '../labels'
+import { CATALOG_SECTION_ID } from '../focus-results'
 import { hasActiveFilters, type CatalogSearch } from '../search'
 import { useCatalogQuery, useUpdateCatalogSearch } from '../use-catalog-search'
 import { CatalogFilters } from './catalog-filters'
@@ -61,6 +63,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
   const query = useCatalogQuery(search)
   const { data, isPending, isError, error, isFetching, isPlaceholderData, refetch } = query
   const isSlow = useDelayedFlag(isFetching, SLOW_REQUEST_MS)
+  const hasSidebar = useMediaQuery('(min-width: 1280px)')
   const panelHeadingId = useId()
 
 
@@ -153,17 +156,21 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
 
   return (
     <section
-      id="mercado"
+      id={CATALOG_SECTION_ID}
+      tabIndex={-1}
       aria-labelledby={panelHeadingId}
-      className="flex scroll-mt-6 flex-col gap-6 md:gap-8 xl:grid xl:grid-cols-[310px_1fr] xl:items-start xl:gap-12"
+      className="flex scroll-mt-6 flex-col outline-none gap-6 md:gap-8 xl:grid xl:grid-cols-[310px_1fr] xl:items-start xl:gap-12"
     >
       <h2 id={panelHeadingId} className="sr-only">
         Mercado de NFTs
       </h2>
-      <aside aria-label="Filtros do catálogo" className="hidden flex-col gap-6 xl:flex">
-        <CatalogFilters search={search} facets={data?.facets} className="bg-surface-card p-5" />
-        <FeaturedNft />
-      </aside>
+      {/* Só monta a barra lateral onde ela aparece: abaixo de 1280 px os filtros vivem na gaveta. */}
+      {hasSidebar && (
+        <aside aria-label="Filtros do catálogo" className="flex flex-col gap-6">
+          <CatalogFilters search={search} facets={data?.facets} className="bg-surface-card p-5" />
+          <FeaturedNft />
+        </aside>
+      )}
       <Tabs value={search.tab} onValueChange={(tab) => update({ tab: tab as NftTab })} className="min-w-0 gap-6 md:gap-8">
         {search.search && (
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-subtle-text">

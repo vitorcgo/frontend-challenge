@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { isApiError } from '@/api/errors'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { featuredNftQueryOptions } from '../queries'
@@ -8,7 +9,10 @@ const frame =
 
 /** Bloco "NFT em destaque" da barra lateral; o NFT vem da API (curadoria), nunca fixo na interface. */
 export function FeaturedNft() {
-  const { data, isPending, isError, refetch } = useQuery(featuredNftQueryOptions())
+  const { data, isPending, isError, error, refetch } = useQuery(featuredNftQueryOptions())
+
+  // Sem destaque no momento é estado vazio, não erro: o bloco simplesmente não aparece.
+  if (isError && isApiError(error) && error.code === 'NOT_FOUND') return null
 
   if (isPending) {
     return (
