@@ -171,7 +171,7 @@ export const cartHandlers = [
     }),
   ),
 
-  // Ao entrar na conta, os itens do visitante passam para o carrinho do usuário (§3).
+  // Ao entrar na conta, os itens do visitante passam para o carrinho do usuário.
   http.post(
     `${API}/cart/merge`,
     route(async ({ request }) => {

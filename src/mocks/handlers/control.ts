@@ -81,7 +81,6 @@ export const controlHandlers = [
         nft.version += 1
         return nft
       })
-      // A mudança sai pela API e pelo Socket.IO, como num servidor real (§6).
       publishNftUpdated(updated)
       return HttpResponse.json<Nft>(toNft(updated))
     }),

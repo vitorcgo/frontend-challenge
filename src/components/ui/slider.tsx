@@ -37,7 +37,6 @@ function Slider({
       )}
       {...props}
     >
-      {/* Visual do Figma: trilho de 4 px e pontas laranja com borda escura. */}
       <SliderPrimitive.Track
         data-slot="slider-track"
         className="relative grow overflow-hidden rounded-full bg-brand/30 data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1"
