@@ -19,8 +19,9 @@ export function useFavorites() {
   })
 }
 
-export function useIsFavorite(nftId: string) {
-  return useFavorites().data?.nftIds.includes(nftId) ?? false
+export function useFavoriteStatus(nftId: string) {
+  const { data, isPending } = useFavorites()
+  return { isFavorite: data?.nftIds.includes(nftId) ?? false, isLoading: isPending }
 }
 
 interface ToggleInput {

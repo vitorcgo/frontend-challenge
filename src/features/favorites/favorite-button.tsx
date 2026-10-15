@@ -3,13 +3,13 @@ import { Icon } from '@/components/icon'
 import { safeRedirect } from '@/features/auth/redirect'
 import { useSession } from '@/features/auth/session'
 import { cn } from '@/lib/utils'
-import { useIsFavorite, useToggleFavorite } from './use-favorites'
+import { useFavoriteStatus, useToggleFavorite } from './use-favorites'
 
 function useFavoriteToggle(nftId: string) {
   const { user, isLoading } = useSession()
   const navigate = useNavigate()
   const href = useRouterState({ select: (state) => state.location.href })
-  const active = useIsFavorite(nftId)
+  const favorites = useFavoriteStatus(nftId)
   const toggle = useToggleFavorite()
 
   const onClick = () => {
@@ -20,7 +20,9 @@ function useFavoriteToggle(nftId: string) {
     toggle.toggle(nftId)
   }
 
-  return { active: Boolean(user) && active, onClick, disabled: isLoading, failed: toggle.isError }
+  // Até a lista chegar não dá para saber se o NFT já é favorito; um clique aí poderia desfavoritar por engano.
+  const disabled = isLoading || (Boolean(user) && favorites.isLoading)
+  return { active: Boolean(user) && favorites.isFavorite, onClick, disabled, failed: toggle.isError }
 }
 
 function FailureMessage({ className }: { className?: string }) {
