@@ -140,14 +140,34 @@ function persist(): void {
   }
 }
 
+let syncing = false
+
+// Cada aba tem a própria cópia em memória: sem isso, uma aba aberta antes do login
+// não conhece a sessão nova, responde 401 e apaga o token compartilhado das duas.
+function syncAcrossTabs(): void {
+  if (syncing) return
+  syncing = true
+  window.addEventListener('storage', (event) => {
+    if (event.key !== STORAGE_KEY || !event.newValue) return
+    try {
+      const parsed = JSON.parse(event.newValue) as MockDatabase
+      if (parsed.schemaVersion === SCHEMA_VERSION) state = parsed
+    } catch {
+      // Valor inválido gravado por outra versão: mantém a cópia atual.
+    }
+  })
+}
+
 export async function initDatabase(): Promise<void> {
   state = load() ?? (await seed())
   persist()
+  syncAcrossTabs()
 }
 
 export async function resetDatabase(): Promise<void> {
   state = await seed()
   persist()
+  syncAcrossTabs()
 }
 
 function current(): MockDatabase {

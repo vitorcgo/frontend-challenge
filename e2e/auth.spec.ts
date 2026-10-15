@@ -45,6 +45,24 @@ test('login volta para a tela de origem e a sessão sobrevive ao refresh', async
   await expectLoggedIn(page, 'Ana Lima', catalog.isMobile)
 })
 
+test('login com outra aba do site aberta mantém a sessão nas duas', async ({ page, catalog, context }) => {
+  test.skip(catalog.isMobile, 'mesmo comportamento; o desktop mostra a sessão no cabeçalho')
+  const other = await context.newPage()
+  await other.goto('/?scenario=fast')
+  await expect(other.locator('#mercado li h3').first()).toBeVisible()
+
+  await catalog.goto('/entrar')
+  await fillLogin(page, 'ana@kurio.dev')
+  await expectLoggedIn(page, 'Ana Lima', false)
+  await expectLoggedIn(other, 'Ana Lima', false)
+
+  // A outra aba confere a sessão na própria cópia do banco; se ela estivesse desatualizada, o 401 apagaria o token.
+  await page.waitForTimeout(1000)
+  await expectLoggedIn(page, 'Ana Lima', false)
+  await other.reload()
+  await expectLoggedIn(other, 'Ana Lima', false)
+})
+
 test('validação do login acontece no campo, antes de chamar a API', async ({ page, catalog }) => {
   await catalog.goto('/entrar')
   await page.getByRole('textbox', { name: 'E-mail' }).fill('nao-e-email')
