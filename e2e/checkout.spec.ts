@@ -67,6 +67,35 @@ test('pedido pendente continua depois do refresh', async ({ page, catalog }) => 
   await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible()
 })
 
+test('conexão que cai com o pedido pendente é retomada sem criar outra compra', async ({ page, catalog }) => {
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const before = await editionStock(page)
+  const dialog = await openReview(page)
+  await dialog.getByRole('button', { name: 'Confirmar e pagar' }).click()
+  await expect(page.getByRole('heading', { name: 'Processando o pagamento' })).toBeVisible()
+
+  // O `order.updated` sai enquanto o socket está fora; o estado volta pela reconciliação com a API.
+  await page.evaluate(() => fetch('/api/__mock/realtime/disconnect', { method: 'POST' }))
+  await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible({ timeout: 15_000 })
+  expect(await editionStock(page)).toBe(before - 1)
+})
+
+test('revisão prende o foco e devolve ao botão ao fechar com Escape', async ({ page, catalog }) => {
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const confirm = page.getByRole('button', { name: 'Confirmar compra' })
+  const dialog = await openReview(page)
+  await expect.poll(() => dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true)
+
+  for (let index = 0; index < 8; index += 1) await page.keyboard.press('Tab')
+  expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true)
+
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(confirm).toBeFocused()
+})
+
 test('preço que muda durante a revisão bloqueia o pagamento até atualizar', async ({ page, catalog }) => {
   await addToCart(page, catalog)
   await loginToCheckout(page)
@@ -147,6 +176,7 @@ test('carteira que recusa a conexão mostra o erro e não abre a revisão', asyn
   await page.getByRole('button', { name: 'Confirmar compra' }).click()
   await expect(page.getByRole('alert').filter({ hasText: 'A conexão foi recusada na carteira. Tente novamente.' })).toBeVisible()
   await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeFocused()
 })
 
 test('desconectar a carteira fecha a revisão', async ({ page, catalog }) => {

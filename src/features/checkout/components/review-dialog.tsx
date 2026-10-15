@@ -36,6 +36,8 @@ interface ReviewDialogProps {
   onRefresh: () => void
   onDisconnect: () => void
   onClose: () => void
+  /** O botão que abriu a revisão fica desativado enquanto a carteira conecta e perde o foco; ele é devolvido aqui. */
+  onReturnFocus: () => void
 }
 
 export function ReviewDialog(props: ReviewDialogProps) {
@@ -44,7 +46,12 @@ export function ReviewDialog(props: ReviewDialogProps) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && !submitting && props.onClose()}>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] w-[min(560px,calc(100%-2rem))] gap-5 overflow-y-auto border-line bg-surface-card p-6 text-cream sm:max-w-[560px]">
+      <DialogContent
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          props.onReturnFocus()
+        }}
+        className="max-h-[calc(100dvh-2rem)] w-[min(560px,calc(100%-2rem))] gap-5 overflow-y-auto border-line bg-surface-card p-6 text-cream sm:max-w-[560px]">
         <div className="flex flex-col gap-1.5">
           <DialogTitle className="text-lg font-bold">Revise seu pedido</DialogTitle>
           <DialogDescription className="text-sm text-subtle-text">

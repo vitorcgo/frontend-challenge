@@ -1,5 +1,5 @@
 import { Link, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { type Cart, type Wallet, type WalletSlot, type WalletType } from '@/api/contracts'
 import { Icon } from '@/components/icon'
 import { Breadcrumb } from '@/components/layout/breadcrumb'
@@ -164,6 +164,7 @@ export function CheckoutPage() {
 
   const [stored, setStored] = useState<Draft | undefined>(readDraft)
   const [showForm, setShowForm] = useState(false)
+  const confirmRef = useRef<HTMLButtonElement>(null)
 
   // Sessão expirou no meio da compra: volta ao login e retoma daqui, com o rascunho preservado.
   useEffect(() => {
@@ -220,7 +221,9 @@ export function CheckoutPage() {
     update({ slot: next, values: wallet ? toValues(wallet) : emptyValues(user?.email) })
     checkout.setErrors({})
   }
-  const confirm = () => void checkout.prepare(draft.values, slot, savedForSlot)
+  const confirm = async () => {
+    if ((await checkout.prepare(draft.values, slot, savedForSlot)) === 'failed') confirmRef.current?.focus()
+  }
   const busy = checkout.step === 'preparing'
 
   const form = (
@@ -253,6 +256,7 @@ export function CheckoutPage() {
       onRefresh={() => void checkout.refreshQuote()}
       onDisconnect={() => void checkout.disconnect()}
       onClose={checkout.closeReview}
+      onReturnFocus={() => confirmRef.current?.focus()}
     />
   )
 
@@ -284,8 +288,9 @@ export function CheckoutPage() {
         </p>
         {feedback}
         <button
+          ref={confirmRef}
           type="button"
-          onClick={confirm}
+          onClick={() => void confirm()}
           disabled={busy}
           className="h-[60px] w-full rounded-[40px] bg-[linear-gradient(100deg,#d28a4c_4%,rgb(210_138_76/0.8)_122%)] text-base font-bold text-ink disabled:opacity-60"
         >
@@ -319,7 +324,7 @@ export function CheckoutPage() {
           <Summary cart={cart.data} />
           <WalletTypeOptions value={draft.values.walletType} onChange={(type) => changeField('walletType', type)} mobile={false} />
           {feedback}
-          <Button onClick={confirm} disabled={busy} className="h-10 rounded-[3px] text-body font-bold">
+          <Button ref={confirmRef} onClick={() => void confirm()} disabled={busy} className="h-10 rounded-[3px] text-body font-bold">
             {busy ? 'Conectando carteira...' : 'Confirmar compra'}
           </Button>
         </aside>

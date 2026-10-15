@@ -83,14 +83,14 @@ export function useCheckout() {
   }
 
   /** Valida, salva a carteira, conecta na rede escolhida e pede a cotação para a revisão. */
-  const prepare = async (values: WalletInput, slot: WalletSlot, saved: Wallet | undefined) => {
+  const prepare = async (values: WalletInput, slot: WalletSlot, saved: Wallet | undefined): Promise<'invalid' | 'review' | 'failed'> => {
     setMessage(undefined)
     const parsed = walletInputSchema.safeParse(values)
     if (!parsed.success) {
       const next = fromZod<CollectorField>(parsed.error)
       setErrors(next)
       document.querySelector<HTMLElement>(`[name="${COLLECTOR_FIELDS.find((field) => next[field])}"]`)?.focus()
-      return
+      return 'invalid'
     }
     setErrors({})
     setStep('preparing')
@@ -107,12 +107,14 @@ export function useCheckout() {
       setQuoteRejected(false)
       setCanRetryOrder(false)
       setStep('review')
+      return 'review'
     } catch (error) {
       setStep('form')
       const result = fromApi(error, COLLECTOR_FIELDS)
       if (Object.keys(result.fields).length) setErrors(result.fields)
       if (isApiError(error) && error.code === 'WALLET_REJECTED') fail(error, '')
       else if (result.message) fail(error, 'Não foi possível preparar o pedido.')
+      return 'failed'
     }
   }
 
