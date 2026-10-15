@@ -7,6 +7,7 @@ import { Icon } from '@/components/icon'
 import { useRegisterMobileBuyBar } from '@/components/layout/mobile-buy-bar-store'
 import { Button } from '@/components/ui/button'
 import { nftDetailQueryOptions } from '@/features/catalog/queries'
+import { FavoriteButton, FavoriteIconButton } from '@/features/favorites/favorite-button'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { multiplyEth } from '@/lib/eth'
@@ -122,19 +123,11 @@ function DesktopDetail({ nft, edition, onSelectEdition, quantity, max, onQuantit
 
             <div className="flex flex-wrap items-start justify-between gap-4">
               <QuantityStepper value={quantity} max={max} onChange={onQuantityChange} />
-              <div className="flex gap-2">
+              <div className="flex items-start gap-2">
                 <Button disabled title={SOON} className="h-10 w-[130px] rounded-md text-sm leading-5 font-bold">
                   COMPRAR
                 </Button>
-                <Button
-                  variant="outline"
-                  disabled
-                  title={SOON}
-                  className="h-10 w-[130px] gap-2 rounded-md border-brand bg-transparent text-sm leading-5 font-medium text-accent-text"
-                >
-                  <Icon name="heart" />
-                  Favoritar
-                </Button>
+                <FavoriteButton nftId={nft.id} />
               </div>
             </div>
             {!edition && <SoldOutNotice />}
@@ -175,15 +168,7 @@ function MobileDetail({ nft, edition, onSelectEdition, quantity, max, onQuantity
       <div className="bg-[linear-gradient(137.6deg,var(--color-surface-card)_12%,var(--color-surface-raised)_106.6%)] px-7 pt-[23px] pb-[84px]">
         <div className="mb-2 flex items-center justify-between">
           <BackButton />
-          <button
-            type="button"
-            disabled
-            title={SOON}
-            aria-label={`Favoritar (${SOON.toLowerCase()})`}
-            className="grid size-[35px] place-items-center rounded-full border border-line bg-surface-raised text-accent-text disabled:opacity-60"
-          >
-            <Icon name="heart-sm" />
-          </button>
+          <FavoriteIconButton nftId={nft.id} />
         </div>
         <MobileGallery name={nft.name} images={nft.gallery} />
       </div>
