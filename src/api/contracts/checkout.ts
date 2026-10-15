@@ -68,9 +68,9 @@ export type OrderUpdatedEvent = RealtimeEvent<'order.updated', 'order', OrderUpd
 
 /** Detalhes do 409 QUOTE_STALE: o que mudou desde a cotação. */
 export interface QuoteChange {
-  nftId: string
+  nftId: string | null
   name: string
-  kind: 'price' | 'availability'
+  kind: 'price' | 'availability' | 'coupon' | 'fee' | 'cart'
   from: string
   to: string
 }

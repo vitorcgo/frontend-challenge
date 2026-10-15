@@ -271,6 +271,7 @@ export function CheckoutPage() {
       quote={checkout.quote}
       wallet={checkout.wallet}
       stale={checkout.step !== 'submitting' && !checkout.canRetryOrder && isQuoteStale(checkout.quote, cart.data)}
+      rejected={checkout.quoteRejected}
       changes={checkout.changes}
       message={checkout.message}
       canRetry={checkout.canRetryOrder}

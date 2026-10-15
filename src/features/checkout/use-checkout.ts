@@ -7,6 +7,7 @@ import { connectWallet, createWallet, disconnectWallet, updateWallet } from '@/a
 import { isApiError } from '@/api/errors'
 import { walletInputSchema } from '@/api/schemas'
 import { useSession } from '@/features/auth/session'
+import { cartKeys } from '@/features/cart/keys'
 import { fromApi, fromZod } from '@/features/auth/form-errors'
 import { announce } from '@/lib/announce'
 import { compareEth } from '@/lib/eth'
@@ -72,6 +73,7 @@ export function useCheckout() {
   const [quote, setQuote] = useState<Quote>()
   const [wallet, setWallet] = useState<Wallet>()
   const [changes, setChanges] = useState<QuoteChange[]>([])
+  const [quoteRejected, setQuoteRejected] = useState(false)
   const [canRetryOrder, setCanRetryOrder] = useState(false)
 
   const fail = (error: unknown, fallback: string) => {
@@ -102,6 +104,7 @@ export function useCheckout() {
       setWallet(current)
       setQuote(fresh)
       setChanges([])
+      setQuoteRejected(false)
       setCanRetryOrder(false)
       setStep('review')
     } catch (error) {
@@ -117,8 +120,13 @@ export function useCheckout() {
     if (!wallet || !quote) return
     setMessage(undefined)
     try {
-      const fresh = await createQuote({ walletId: wallet.id, network: quote.network })
+      const [fresh] = await Promise.all([
+        createQuote({ walletId: wallet.id, network: quote.network }),
+        queryClient.invalidateQueries({ queryKey: cartKeys.all }),
+      ])
       setQuote(fresh)
+      setChanges([])
+      setQuoteRejected(false)
       setCanRetryOrder(false)
       announce('Revisão atualizada com os valores atuais. Confira e confirme de novo.')
     } catch (error) {
@@ -142,7 +150,9 @@ export function useCheckout() {
       if (error.code === 'QUOTE_STALE' || error.code === 'QUOTE_EXPIRED') {
         const details = error.details as { changes?: QuoteChange[] } | undefined
         setChanges(details?.changes ?? [])
+        setQuoteRejected(true)
         forgetIdempotencyKey(quote.id)
+        void queryClient.invalidateQueries({ queryKey: cartKeys.all })
         return fail(error, '')
       }
       if (error.code === 'IDEMPOTENCY_CONFLICT') {
@@ -175,9 +185,10 @@ export function useCheckout() {
   const closeReview = () => {
     setQuote(undefined)
     setChanges([])
+    setQuoteRejected(false)
     setMessage(undefined)
     setStep('form')
   }
 
-  return { step, errors, setErrors, message, quote, wallet, changes, canRetryOrder, prepare, refreshQuote, submit, disconnect, closeReview }
+  return { step, errors, setErrors, message, quote, wallet, changes, quoteRejected, canRetryOrder, prepare, refreshQuote, submit, disconnect, closeReview }
 }

@@ -8,15 +8,26 @@ import { WALLET_TYPE_LABELS } from '../labels'
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
 function describeChange(change: QuoteChange) {
-  return change.kind === 'price'
-    ? `${change.name}: o preço mudou de ${formatEth(change.from)} para ${formatEth(change.to)}.`
-    : `${change.name}: ${change.to === '0' ? 'a edição esgotou' : `restam ${change.to} unidades`}.`
+  switch (change.kind) {
+    case 'price':
+      return `${change.name}: o preço mudou de ${formatEth(change.from)} para ${formatEth(change.to)}.`
+    case 'availability':
+      return `${change.name}: ${change.to === '0' ? 'a edição esgotou' : `restam ${change.to} unidades`}.`
+    case 'coupon':
+      return `${change.name}: não é mais válido.`
+    case 'fee':
+      return `Taxa de rede: mudou de ${formatEth(change.from)} para ${formatEth(change.to)}.`
+    case 'cart':
+      return 'Os itens do carrinho mudaram desde a revisão.'
+  }
 }
 
 interface ReviewDialogProps {
   quote: Quote
   wallet: Wallet
   stale: boolean
+  /** A API recusou a cotação (mudou ou expirou): só segue depois de atualizar. */
+  rejected: boolean
   changes: QuoteChange[]
   message?: string
   canRetry: boolean
@@ -28,8 +39,8 @@ interface ReviewDialogProps {
 }
 
 export function ReviewDialog(props: ReviewDialogProps) {
-  const { quote, wallet, stale, changes, message, canRetry, submitting } = props
-  const outdated = stale || changes.length > 0
+  const { quote, wallet, stale, rejected, changes, message, canRetry, submitting } = props
+  const outdated = stale || rejected
 
   return (
     <Dialog open onOpenChange={(open) => !open && !submitting && props.onClose()}>
@@ -43,11 +54,11 @@ export function ReviewDialog(props: ReviewDialogProps) {
 
         {outdated && (
           <div role="alert" className="flex flex-col gap-3 rounded-md border border-coral/60 p-4 text-sm">
-            <p className="font-bold text-coral">Os valores mudaram desde a revisão.</p>
+            <p className="font-bold text-coral">{rejected && message ? message : 'Os valores mudaram desde a revisão.'}</p>
             {changes.length > 0 && (
               <ul className="flex list-disc flex-col gap-1 pl-5 text-subtle-text">
                 {changes.map((change) => (
-                  <li key={`${change.nftId}-${change.kind}`}>{describeChange(change)}</li>
+                  <li key={`${change.kind}-${change.nftId ?? change.name}`}>{describeChange(change)}</li>
                 ))}
               </ul>
             )}

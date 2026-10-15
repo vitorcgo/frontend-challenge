@@ -46,6 +46,14 @@ test('compra completa: revisão, pedido pendente e recibo confirmado', async ({ 
   await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible()
   await expect(page.getByRole('link', { name: /Ver no Etherscan/ })).toHaveAttribute('href', /^https:\/\/etherscan\.io\/tx\/0x/)
   expect(await editionStock(page)).toBe(before - 1)
+
+  // O recibo é o snapshot do pedido: mudar o preço no catálogo depois não altera os valores.
+  await page.evaluate(
+    (id) => fetch(`/api/__mock/nfts/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: '{"price":"9"}' }),
+    NFT,
+  )
+  await page.reload()
+  await expect(page.getByRole('cell', { name: '1.19 ETH' })).toBeVisible()
 })
 
 test('pedido pendente continua depois do refresh', async ({ page, catalog }) => {
@@ -102,6 +110,70 @@ test('resposta perdida: tentar de novo recupera o mesmo pedido, sem cobrar duas 
   await dialog.getByRole('button', { name: 'Tentar de novo' }).click()
   await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible()
   expect(await editionStock(page)).toBe(before - 1)
+})
+
+test('clique repetido em "Confirmar e pagar" cria um pedido só', async ({ page, catalog }) => {
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const before = await editionStock(page)
+  const dialog = await openReview(page)
+  await dialog.getByRole('button', { name: 'Confirmar e pagar' }).dblclick()
+
+  await expect(page.getByRole('heading', { name: 'Seus NFTs agora estão na sua carteira' })).toBeVisible()
+  expect(await editionStock(page)).toBe(before - 1)
+})
+
+test('carrinho alterado em outra aba exige nova revisão', async ({ page, catalog }) => {
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const dialog = await openReview(page)
+
+  await page.evaluate(async () => {
+    const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('kurio.session.token')}` }
+    await fetch('/api/cart/items', { method: 'POST', headers, body: JSON.stringify({ nftId: 'ivory-baron-088', editionId: '1-50', quantity: 1 }) })
+  })
+  await dialog.getByRole('button', { name: 'Confirmar e pagar' }).click()
+  await expect(dialog.getByText('Os itens do carrinho mudaram desde a revisão.')).toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Confirmar e pagar' })).toBeDisabled()
+
+  await dialog.getByRole('button', { name: 'Atualizar revisão' }).click()
+  await expect(dialog.getByText('Ivory Baron #088')).toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Confirmar e pagar' })).toBeEnabled()
+})
+
+test('carteira que recusa a conexão mostra o erro e não abre a revisão', async ({ page, catalog }) => {
+  await addToCart(page, catalog, 'wallet-rejected')
+  await loginToCheckout(page)
+  await page.getByRole('button', { name: 'Confirmar compra' }).click()
+  await expect(page.getByRole('alert').filter({ hasText: 'A conexão foi recusada na carteira. Tente novamente.' })).toBeVisible()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('desconectar a carteira fecha a revisão', async ({ page, catalog }) => {
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const dialog = await openReview(page)
+  await dialog.getByRole('button', { name: 'Desconectar carteira' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeEnabled()
+})
+
+test('sessão que expira no checkout volta ao pagamento com o rascunho', async ({ page, catalog }) => {
+  test.skip(catalog.isMobile, 'a observação fica no formulário do desktop')
+  await addToCart(page, catalog)
+  await loginToCheckout(page)
+  const note = page.getByRole('textbox', { name: 'Observação do colecionador (opcional)' })
+  await note.fill('Presente de aniversário')
+
+  await page.evaluate(() => fetch('/api/__mock/sessions/expire', { method: 'POST' }))
+  await page.getByRole('button', { name: 'Confirmar compra' }).click()
+  await expect(page).toHaveURL(/\/entrar\?redirect=%2Fpagamento/)
+
+  await page.getByRole('textbox', { name: 'E-mail' }).fill('ana@kurio.dev')
+  await page.getByLabel('Senha', { exact: true }).fill('Kurio2026!')
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click()
+  await expect(page).toHaveURL(/\/pagamento/)
+  await expect(note).toHaveValue('Presente de aniversário')
 })
 
 test('campos obrigatórios vazios mostram erro e não abrem a revisão', async ({ page, catalog }) => {

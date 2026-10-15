@@ -21,7 +21,7 @@ function requireCartKey(request: Request): string {
 
 const emptyCart = (): CartRecord => ({ items: [], couponCode: null, updatedAt: nowIso() })
 
-function findCoupon(code: string | null) {
+export function findCoupon(code: string | null) {
   const coupon = COUPONS.find((item) => item.code === code)
   return coupon && Date.parse(coupon.expiresAt) > Date.now() ? coupon : undefined
 }

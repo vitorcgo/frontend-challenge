@@ -9,12 +9,13 @@ import {
   type QuoteItem,
 } from '@/api/contracts'
 import { orderInputSchema, quoteRequestSchema } from '@/api/schemas'
-import { compareEth } from '@/lib/eth'
+import { addEth, compareEth } from '@/lib/eth'
 import { read, write, type MockDatabase, type OrderRecord, type QuoteRecord } from '../db'
+import { NETWORK_FEES } from '../fixtures/pricing'
 import { ApiFailure, API, newId, notFound, nowIso, param, readJson, requireSession, route } from '../http'
 import { publishNftUpdated, publishOrderUpdated } from '../realtime'
 import { getScenario } from '../scenarios'
-import { toCart } from './cart'
+import { findCoupon, toCart } from './cart'
 
 const QUOTE_TTL_MS = 5 * 60 * 1000
 const SETTLE_DELAY_MS = 2000
@@ -55,6 +56,21 @@ function toOrder({
 
 function quoteChanges(quote: QuoteRecord, db: Readonly<MockDatabase>): QuoteChange[] {
   const changes: QuoteChange[] = []
+  const cart = db.carts[`user:${quote.userId}`]
+  const sameCart =
+    cart?.items.length === quote.items.length &&
+    quote.items.every((item) =>
+      cart.items.some((current) => current.nftId === item.nftId && current.editionId === item.editionId && current.quantity === item.quantity),
+    )
+  if (!sameCart) changes.push({ nftId: null, name: 'Carrinho', kind: 'cart', from: '', to: '' })
+  if (quote.coupon && !findCoupon(quote.coupon.code)) {
+    changes.push({ nftId: null, name: `Cupom ${quote.coupon.code}`, kind: 'coupon', from: quote.coupon.code, to: '' })
+  }
+  const networks = new Set(quote.items.map((item) => db.nfts.find((nft) => nft.id === item.nftId)?.network ?? quote.network))
+  const fee = addEth('0', ...[...networks].map((network) => NETWORK_FEES[network]))
+  if (compareEth(fee, quote.summary.networkFee) !== 0) {
+    changes.push({ nftId: null, name: 'Taxa de rede', kind: 'fee', from: quote.summary.networkFee, to: fee })
+  }
   for (const item of quote.items) {
     const nft = db.nfts.find((candidate) => candidate.id === item.nftId)
     const edition = nft?.editions.find((candidate) => candidate.id === item.editionId)
