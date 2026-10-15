@@ -125,6 +125,30 @@ test('compra e favoritos não aparentam funcionar antes de existirem', async ({ 
   await expect(buy).toBeDisabled()
 })
 
+test('sem rolagem horizontal, inclusive com preço anterior e textos longos', async ({ page, catalog }) => {
+  // Neon Vessel tem preço anterior (texto só para leitor de tela) e aparece em "Mais desta coleção" de outros NFTs.
+  for (const id of ['emerald-ape-042', 'sage-nomad-009', 'neon-vessel-552']) {
+    await catalog.goto(`/nft/${id}`)
+    await expect(page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('listitem').first()).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBe(0)
+  }
+})
+
+test('banco simulado salvo por uma versão anterior é descartado', async ({ page, catalog }) => {
+  // Navegador que já usou o app antes: dados velhos no localStorage, com imagens que não existem mais.
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem('seeded')) return
+    sessionStorage.setItem('seeded', '1')
+    localStorage.setItem('kurio.mocks.db', JSON.stringify({ schemaVersion: 1, nfts: [], users: [] }))
+  })
+  await catalog.goto(EMERALD)
+  await expect(page.getByRole('heading', { level: 1, name: 'Emerald Ape #042' })).toBeVisible()
+  const loaded = await page.locator('main img').evaluateAll((images) =>
+    Promise.all(images.map((image) => (image as HTMLImageElement).decode().then(() => true, () => false))),
+  )
+  expect(loaded.every(Boolean)).toBe(true)
+})
+
 test.describe('desktop', () => {
   test.skip(({ isMobile }) => isMobile, 'miniaturas e lupa existem só a partir de 768 px')
 
@@ -170,11 +194,18 @@ test.describe('mobile', () => {
     await expect(page.getByText('2.38 ETH')).toBeVisible()
   })
 
-  test('pontos da galeria trocam a imagem', async ({ page, catalog }) => {
+  test('deslizar a galeria move o indicador de posição', async ({ page, catalog }) => {
     await catalog.goto(EMERALD)
-    const dot = page.getByRole('button', { name: 'Imagem 3 de 4' })
-    await dot.click()
-    await expect(dot).toHaveAttribute('aria-current', 'true')
+    const track = page.getByRole('list', { name: /Imagens da obra/ })
+    await track.evaluate((element) => element.scrollTo({ left: element.clientWidth * 2 }))
+    await expect(page.getByText('Imagem 3 de 4')).toBeAttached()
+    await expect(page.locator('[data-active]')).toHaveCount(1)
+  })
+
+  test('sem a barra de compra, a navegação continua no mobile', async ({ page, catalog }) => {
+    await catalog.goto('/nft/nao-existe-123')
+    await expect(page.getByRole('heading', { name: 'NFT não encontrado' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Principal' })).toBeVisible()
   })
 
   test('voltar retorna à tela anterior', async ({ page, catalog }) => {

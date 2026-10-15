@@ -20,7 +20,8 @@ export function RelatedNfts({ nft }: { nft: Nft }) {
       <h2 id="related-title" className="border-b border-brand/30 pb-3 text-md leading-4 font-bold text-accent-text">
         Mais desta coleção
       </h2>
-      <ul className="-mx-6 grid snap-x auto-cols-[minmax(160px,219px)] grid-flow-col justify-between gap-6 overflow-x-auto px-6 pb-2 xl:mx-0 xl:px-0">
+      {/* `relative`: textos só para leitor de tela (posição absoluta) ficam presos na rolagem da lista, sem esticar a página. */}
+      <ul className="relative -mx-6 grid snap-x auto-cols-[minmax(160px,219px)] grid-flow-col justify-between gap-6 overflow-x-auto px-6 pb-2 xl:mx-0 xl:px-0">
         {isPending
           ? Array.from({ length: RELATED_COUNT }, (_, index) => (
               <li key={index} className="snap-start">

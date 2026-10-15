@@ -45,7 +45,7 @@ export interface MockDatabase {
 }
 
 // Mudou a forma do banco? Incremente para descartar dados antigos salvos no navegador.
-const SCHEMA_VERSION = 2
+const SCHEMA_VERSION = 3
 const STORAGE_KEY = 'kurio.mocks.db'
 
 let state: MockDatabase | null = null

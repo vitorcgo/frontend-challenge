@@ -1,6 +1,7 @@
 import type { Nft } from '@/api/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { NETWORK_LABELS } from '@/features/catalog/labels'
+import { pluralize } from '@/lib/format'
 import { RatingStars } from './rating-stars'
 
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
@@ -15,7 +16,7 @@ function Field({ label, children }: { label: string; children: string }) {
 }
 
 const triggerClass =
-  'h-auto flex-none rounded-none border-0 p-0 pb-3 text-md leading-4 font-normal text-cream after:bottom-0 after:h-[3px] after:bg-brand hover:text-accent-text data-[state=active]:font-bold data-[state=active]:text-accent-text'
+  'h-auto flex-none rounded-none border-0 p-0 pb-3 max-w-full text-left whitespace-normal! text-md leading-4 font-normal text-cream after:bottom-0 after:h-[3px] after:bg-brand hover:text-accent-text data-[state=active]:font-bold data-[state=active]:text-accent-text'
 
 /** Figma "Description": abas Detalhes e Avaliações sobre uma linha fina. */
 export function NftDetailTabs({ nft }: { nft: Nft }) {
@@ -27,7 +28,7 @@ export function NftDetailTabs({ nft }: { nft: Nft }) {
           Detalhes do NFT
         </TabsTrigger>
         <TabsTrigger value="reviews" className={triggerClass}>
-          Avaliações de colecionadores ({nft.rating.count})
+          {nft.rating.count === 1 ? 'Avaliação de colecionador' : 'Avaliações de colecionadores'} ({nft.rating.count})
         </TabsTrigger>
       </TabsList>
 
@@ -50,7 +51,8 @@ export function NftDetailTabs({ nft }: { nft: Nft }) {
         <div className="flex items-center gap-3">
           <RatingStars average={nft.rating.average} />
           <p className="text-body text-cream">
-            {nft.rating.average} de 5, com base em {nft.rating.count} avaliações de colecionadores.
+            {nft.rating.average} de 5, com base em{' '}
+            {pluralize(nft.rating.count, 'avaliação de colecionador', 'avaliações de colecionadores')}.
           </p>
         </div>
         <p className="text-sm leading-6 text-subtle-text">

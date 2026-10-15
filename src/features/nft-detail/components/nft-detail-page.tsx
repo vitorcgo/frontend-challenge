@@ -1,15 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { EditionId, Nft } from '@/api/contracts'
 import { isApiError } from '@/api/errors'
 import { Icon } from '@/components/icon'
+import { useRegisterMobileBuyBar } from '@/components/layout/mobile-buy-bar-store'
 import { Button } from '@/components/ui/button'
 import { nftDetailQueryOptions } from '@/features/catalog/queries'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { multiplyEth } from '@/lib/eth'
-import { formatEth } from '@/lib/format'
+import { formatEth, pluralize } from '@/lib/format'
 import { EXACT_LOCATION, EXACT_PATH } from '@/lib/link-options'
 import { maxQuantity, pickEdition } from '../edition'
 import { EditionPicker } from './edition-picker'
@@ -105,7 +106,9 @@ function DesktopDetail({ nft, edition, onSelectEdition, quantity, max, onQuantit
                 </p>
                 <div className="flex items-center gap-1">
                   <RatingStars average={nft.rating.average} />
-                  <p className="text-body text-cream">{nft.rating.count} avaliações de colecionadores</p>
+                  <p className="text-body text-cream">
+                    {pluralize(nft.rating.count, 'avaliação de colecionador', 'avaliações de colecionadores')}
+                  </p>
                 </div>
               </div>
               <hr className="border-0 border-t border-brand/30" />
@@ -208,11 +211,33 @@ function MobileDetail({ nft, edition, onSelectEdition, quantity, max, onQuantity
         <RelatedNfts nft={nft} />
       </div>
 
-      {/* Figma "Buy Bar": fica fixa no lugar da barra de navegação, que some nesta tela. */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex flex-col gap-5 rounded-t-[40px] bg-surface-card px-6 pt-5 pb-[max(36px,env(safe-area-inset-bottom))] drop-shadow-[0_0_10px_rgb(10_6_4/0.45)]">
+      <MobileBuyBar nft={nft} quantity={quantity} max={max} onQuantityChange={onQuantityChange} />
+    </div>
+  )
+}
+
+/** Figma "Buy Bar": fica fixa no lugar da barra de navegação, que some enquanto esta barra está na tela. */
+function MobileBuyBar({ nft, quantity, max, onQuantityChange }: Pick<ViewProps, 'nft' | 'quantity' | 'max' | 'onQuantityChange'>) {
+  useRegisterMobileBuyBar()
+  const barRef = useRef<HTMLDivElement>(null)
+  const [height, setHeight] = useState(0)
+
+  // A barra cresce quando o aviso de limite quebra de linha; o espaço no fim da página acompanha a altura real.
+  useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    const observer = new ResizeObserver(([entry]) => setHeight(entry?.borderBoxSize[0]?.blockSize ?? bar.offsetHeight))
+    observer.observe(bar)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <>
+      <div aria-hidden style={{ height: height + 24 }} />
+      <div ref={barRef} className="fixed inset-x-0 bottom-0 z-40 flex flex-col gap-5 rounded-t-[40px] bg-surface-card px-6 pt-5 pb-[max(36px,env(safe-area-inset-bottom))] drop-shadow-[0_0_10px_rgb(10_6_4/0.45)]">
         <div className="flex items-start justify-between gap-3">
           <QuantityStepper value={quantity} max={max} onChange={onQuantityChange} size="sm" label="Qtd." />
-          <p className="pt-1.5 text-xl leading-4 font-bold text-accent-text">
+          <p className="pt-1.5 text-xl leading-4 font-bold whitespace-nowrap text-accent-text">
             <span className="sr-only">Total: </span>
             {formatEth(multiplyEth(nft.price, Math.max(quantity, 1)))}
           </p>
@@ -237,7 +262,7 @@ function MobileDetail({ nft, edition, onSelectEdition, quantity, max, onQuantity
           </button>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -300,13 +325,15 @@ export function NftDetailPage({ id }: { id: string }) {
     )
   }
 
+  // A galeria nunca fica vazia: sem imagens extras, mostra a imagem principal.
+  const gallery = nft.gallery.length ? nft.gallery : [nft.image]
   const edition = pickEdition(nft, requestedEdition)
   const max = maxQuantity(nft, edition)
   // Trocar para uma edição com menos unidades reduz a quantidade ao novo limite.
   const quantity = max === 0 ? 0 : Math.min(Math.max(requestedQuantity, 1), max)
 
   const props: ViewProps = {
-    nft,
+    nft: { ...nft, gallery },
     edition,
     onSelectEdition: setEdition,
     quantity,

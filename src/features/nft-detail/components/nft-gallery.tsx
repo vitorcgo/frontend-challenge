@@ -81,22 +81,16 @@ export function DesktopGallery({ name, images }: GalleryProps) {
 /** Mobile (Figma "Hero"): imagens lado a lado com deslize e indicador de posição (pílula na atual). */
 export function MobileGallery({ images }: GalleryProps) {
   const [index, setIndex] = useState(0)
-  const trackRef = useRef<HTMLUListElement>(null)
 
   const onScroll = (event: UIEvent<HTMLUListElement>) => {
     const track = event.currentTarget
     setIndex(Math.round(track.scrollLeft / track.clientWidth))
   }
 
-  const goTo = (target: number) => {
-    const track = trackRef.current
-    if (track) track.scrollTo({ left: target * track.clientWidth, behavior: 'smooth' })
-  }
-
   return (
     <div className="relative">
+      {/* Focável: pelo teclado, as setas rolam as imagens. */}
       <ul
-        ref={trackRef}
         tabIndex={0}
         aria-label="Imagens da obra, deslize para ver as outras"
         onScroll={onScroll}
@@ -118,23 +112,19 @@ export function MobileGallery({ images }: GalleryProps) {
           </li>
         ))}
       </ul>
-      <div className="absolute inset-x-0 bottom-[50px] flex justify-center gap-0">
+      {/* Indicador de posição do Figma: pontos de 7 px são pequenos demais para toque, então não são botões. */}
+      <div aria-hidden className="absolute inset-x-0 bottom-[50px] flex justify-center gap-[7px]">
         {images.map((_, imageIndex) => (
-          <button
+          <span
             key={imageIndex}
-            type="button"
-            aria-label={`Imagem ${imageIndex + 1} de ${images.length}`}
-            aria-current={imageIndex === index ? 'true' : undefined}
-            onClick={() => goTo(imageIndex)}
-            // Área de toque maior que o ponto de 7 px desenhado.
-            className="grid h-6 place-items-center px-[3.5px]"
-          >
-            <span
-              className={cn('block h-[7px] rounded-full bg-brand transition-all', imageIndex === index ? 'w-7' : 'w-[7px]')}
-            />
-          </button>
+            data-active={imageIndex === index || undefined}
+            className={cn('block h-[7px] rounded-full bg-brand transition-all', imageIndex === index ? 'w-7' : 'w-[7px]')}
+          />
         ))}
       </div>
+      <p aria-live="polite" className="sr-only">
+        Imagem {index + 1} de {images.length}
+      </p>
     </div>
   )
 }
