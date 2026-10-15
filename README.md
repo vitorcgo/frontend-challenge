@@ -4,7 +4,8 @@ Solução do Frontend Challenge: marketplace de NFTs em React e TypeScript, com 
 
 API REST, autenticação, carteiras, pagamentos e Socket.IO são simulados com MSW dentro do navegador. Não há backend: o mesmo build roda em desenvolvimento, nos testes e no deploy.
 
-- Aplicação publicada: _a definir após o deploy na Vercel_
+- Aplicação publicada: https://frontend-challenge-ten-orcin.vercel.app
+- Repositório: https://github.com/vitorcgo/frontend-challenge
 - Arquitetura, contratos, cache, tempo real, limitações e desvios do Figma: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ## Stack
@@ -191,9 +192,40 @@ As baselines visuais foram geradas no Windows (sufixo `-win32`). Em outro sistem
 
 ## Lighthouse
 
-Configuração em `lighthouse/` (Lighthouse CI): build otimizado, cenário padrão dos mocks, Início e detalhe do NFT, 3 medições por página e perfil. Relatórios HTML e JSON em `lighthouse/reports/`. A auditoria usa o Chromium do Playwright (instalado com `pnpm exec playwright install chromium`); para usar outro Chrome, defina `CHROME_PATH`.
+Configuração em `lighthouse/` (Lighthouse CI): build otimizado, cenário padrão dos mocks, Início e detalhe do NFT, 3 medições por página e perfil. Relatórios HTML e JSON em `lighthouse/reports/` (`mobile` e `desktop` para o preview local, `deploy-mobile` e `deploy-desktop` para o site publicado). A auditoria usa o Chromium do Playwright (instalado com `pnpm exec playwright install chromium`); para usar outro Chrome, defina `CHROME_PATH`.
 
-Medianas (15/10/2026):
+Por padrão a auditoria roda no preview local. Para auditar o site publicado:
+
+```bash
+LIGHTHOUSE_URL=https://frontend-challenge-ten-orcin.vercel.app pnpm exec lhci autorun --config=lighthouse/lighthouserc.mobile.cjs
+```
+
+No PowerShell, defina antes `$env:LIGHTHOUSE_URL="https://..."`. Os relatórios vão para `lighthouse/reports/deploy-mobile` e `deploy-desktop`.
+
+### Site publicado, PageSpeed Insights
+
+Medido em [pagespeed.web.dev](https://pagespeed.web.dev) em 15/10/2026: 3 execuções por página no mobile e uma no desktop.
+
+| Página | Perfil | Performance | Mediana | Acessibilidade | Boas práticas | SEO |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| Início | mobile | 91, 90, 88 | 90 | 100 | 100 | 100 |
+| Detalhe | mobile | 91, 90, 88 | 90 | 100 | 100 | 100 |
+| Início | desktop | 100 | 100 | 100 | 100 | 100 |
+
+### Site publicado, Lighthouse CI
+
+Medianas de 3 execuções com a configuração versionada (relatórios em `lighthouse/reports/deploy-*`):
+
+| Página | Perfil | Performance | Acessibilidade | Boas práticas | SEO | LCP | TBT | CLS |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Início | desktop | 100 | 100 | 100 | 100 | 0,68 s | 15 ms | 0,005 |
+| Detalhe | desktop | 100 | 100 | 100 | 100 | 0,67 s | 5 ms | 0 |
+| Início | mobile | 80 | 100 | 100 | 100 | 3,10 s | 393 ms | 0,016 |
+| Detalhe | mobile | 82 | 100 | 100 | 100 | 3,20 s | 310 ms | 0 |
+
+### Preview local, Lighthouse CI
+
+Medianas de 3 execuções do mesmo build servido localmente (relatórios em `lighthouse/reports/mobile` e `desktop`):
 
 | Página | Perfil | Performance | Acessibilidade | Boas práticas | SEO | LCP | TBT | CLS |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -202,9 +234,7 @@ Medianas (15/10/2026):
 | Início | mobile | 77 | 100 | 100 | 100 | 3,91 s | 256 ms | 0,016 |
 | Detalhe | mobile | 76 | 100 | 100 | 100 | 4,17 s | 244 ms | 0 |
 
-Performance mobile fica abaixo da meta de 90. A causa e o que foi tentado estão em [ARCHITECTURE.md](ARCHITECTURE.md#performance).
-
-Ambiente da medição: Lighthouse 12.6.1 (`@lhci/cli` 0.15.1), Chromium 156 do Playwright em modo headless, Node 24.19.0, Windows 11, AMD Ryzen 7 4800H, 31 GB de RAM. Mobile com a simulação padrão (RTT 150 ms, 1,6 Mbps, CPU 4x mais lenta); desktop com o preset `desktop`.
+Ambiente do Lighthouse CI: Lighthouse 12.6.1 (`@lhci/cli` 0.15.1), Chromium 156 do Playwright em modo headless, Node 24.19.0, Windows 11, AMD Ryzen 7 4800H, 31 GB de RAM. Mobile com a simulação padrão (RTT 150 ms, 1,6 Mbps, CPU 4x mais lenta); desktop com o preset `desktop`.
 
 ## Deploy
 

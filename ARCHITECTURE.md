@@ -219,7 +219,7 @@ Todo evento tem a mesma forma:
 
 ## Performance
 
-Os números estão no [README](README.md#lighthouse). Desktop fica em 98; mobile em 76 e 77, abaixo da meta de 90.
+Os números estão no [README](README.md#lighthouse). No site publicado, o PageSpeed Insights deu 91, 90 e 88 no mobile (mediana 90) e 100 no desktop.
 
 O que pesa no mobile: o app é uma SPA que precisa baixar e executar o React e iniciar o MSW antes de pintar. Com a CPU simulada 4x mais lenta, a avaliação de scripts soma cerca de 1,5 s (app cerca de 770 ms, MSW cerca de 700 ms). A rede não é o gargalo: a cadeia crítica é curta (HTML, CSS, fonte e JavaScript principal de 85 KB comprimido).
 
@@ -259,12 +259,11 @@ O enunciado pede a auditoria com mocks e funcionalidades completos, sem simplifi
 ## Limitações
 
 - Tudo é simulado no navegador: dados, eventos e pagamentos existem só no navegador de quem usa, sem compartilhamento entre dispositivos.
-- Cada aba carrega o banco do `localStorage` ao abrir e o grava inteiro a cada mudança. Duas abas alterando dados ao mesmo tempo podem sobrescrever uma à outra, e os eventos em tempo real não passam de uma aba para a outra. Use uma aba por vez, ou recarregue a outra.
+- Cada aba tem uma cópia do banco em memória, salva no `localStorage` a cada mudança e atualizada nas outras abas pelo evento `storage` (login, carrinho e pedidos feitos numa aba valem nas outras). Duas gravações no mesmo instante em abas diferentes ainda podem se sobrescrever, e os eventos em tempo real não passam de uma aba para a outra.
 - Não há listagem de pedidos anteriores; o enunciado pede consulta de estado e recibo, acessados pelo link do pedido.
 - A aba "Avaliações" mostra nota e total, sem comentários, porque a API não tem comentários.
 - Baselines visuais geradas no Windows; em outro sistema precisam ser geradas de novo.
 - Versões travadas por compatibilidade: MSW 2 (o `@mswjs/socket.io-binding` ainda não aceita o MSW 3) e TypeScript 6.0 (o `typescript-eslint` ainda não suporta o 7). O lockfile fixa o restante.
-- Performance mobile abaixo da meta, pelos motivos da seção [Performance](#performance).
 
 ## Desvios do Figma
 
