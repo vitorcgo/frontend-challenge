@@ -1,0 +1,3 @@
+# Arquivos gerados: ficam fora da contagem de linguagens do GitHub e recolhidos nos diffs.
+lighthouse/reports/** linguist-generated=true
+src/routeTree.gen.ts linguist-generated=true
