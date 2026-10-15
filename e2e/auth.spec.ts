@@ -191,8 +191,10 @@ test.describe('desktop', () => {
   })
 })
 
-test('redirecionamento para fora do app é ignorado', async ({ page, catalog }) => {
-  await catalog.goto('/entrar?redirect=%2F%2Fexemplo.com')
-  await fillLogin(page, 'ana@kurio.dev')
-  await expect(page).toHaveURL(/localhost:\d+\/(\?.*)?$/)
-})
+for (const redirect of ['%2F%2Fexemplo.com', '%2F%5Cexemplo.com']) {
+  test(`redirecionamento para fora do app é ignorado (${decodeURIComponent(redirect)})`, async ({ page, catalog }) => {
+    await catalog.goto(`/entrar?redirect=${redirect}`)
+    await fillLogin(page, 'ana@kurio.dev')
+    await expect(page).toHaveURL(/localhost:\d+\/(\?.*)?$/)
+  })
+}

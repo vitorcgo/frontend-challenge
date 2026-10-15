@@ -238,4 +238,4 @@ Ambiente do Lighthouse CI: Lighthouse 12.6.1 (`@lhci/cli` 0.15.1), Chromium 156 
 
 ## Deploy
 
-O site é estático e roda na Vercel sem configuração extra: `vercel.json` reescreve todas as rotas para o `index.html`, então acesso direto e refresh funcionam em qualquer tela. Os mocks e o Socket.IO simulado vão no build publicado.
+O site é estático e roda na Vercel sem configuração extra: `vercel.json` reescreve todas as rotas para o `index.html`, então acesso direto e refresh funcionam em qualquer tela. Os mocks e o Socket.IO simulado vão no build publicado. O mesmo arquivo define cabeçalhos de segurança: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`.
