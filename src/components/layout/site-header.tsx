@@ -58,9 +58,13 @@ function AccountActions() {
   if (user) {
     return (
       <div className="flex items-center gap-3">
-        <span className="max-w-[140px] truncate text-sm text-cream" title={user.displayName}>
+        <Link
+          to="/perfil"
+          title={`${user.displayName}: meu perfil`}
+          className="max-w-[140px] truncate rounded-sm text-sm text-cream hover:text-accent-text"
+        >
           {user.displayName}
-        </span>
+        </Link>
         <Button onClick={() => logout.mutate()} disabled={logout.isPending} className={buttonClass}>
           <Icon name="logout" />
           Sair

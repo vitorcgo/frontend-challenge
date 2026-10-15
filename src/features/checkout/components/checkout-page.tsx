@@ -1,6 +1,6 @@
 import { Link, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { type Cart, type Wallet, type WalletInput, type WalletSlot, type WalletType } from '@/api/contracts'
+import { type Cart, type Wallet, type WalletSlot, type WalletType } from '@/api/contracts'
 import { Icon } from '@/components/icon'
 import { Breadcrumb } from '@/components/layout/breadcrumb'
 import { Button } from '@/components/ui/button'
@@ -16,34 +16,9 @@ import { useWallets } from '../queries'
 import { readDraft, saveDraft, type CheckoutDraft as Draft } from '../draft'
 import { WALLET_TYPE_LABELS } from '../labels'
 import { isQuoteStale, useCheckout } from '../use-checkout'
+import { emptyWalletValues as emptyValues, walletValues as toValues } from '../wallet-values'
 import { CollectorForm, type CollectorField } from './collector-form'
 import { ReviewDialog } from './review-dialog'
-
-const emptyValues = (email = ''): WalletInput => ({
-  displayName: '',
-  alias: '',
-  network: 'ethereum',
-  profileName: '',
-  address: '',
-  secondaryAddress: '',
-  walletType: 'metamask',
-  referralCode: '',
-  email,
-  ensName: '',
-})
-
-const toValues = (wallet: Wallet): WalletInput => ({
-  displayName: wallet.displayName,
-  alias: wallet.alias,
-  network: wallet.network,
-  profileName: wallet.profileName,
-  address: wallet.address,
-  secondaryAddress: wallet.secondaryAddress,
-  walletType: wallet.walletType,
-  referralCode: wallet.referralCode,
-  email: wallet.email,
-  ensName: wallet.ensName,
-})
 
 const shortAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`
 
@@ -253,10 +228,8 @@ export function CheckoutPage() {
       values={draft.values}
       errors={checkout.errors}
       onChange={changeField}
-      note={draft.note}
-      onNoteChange={(note) => update({ note })}
-      useOther={slot === 'secondary'}
-      onUseOtherChange={(other) => selectSlot(other ? 'secondary' : 'primary')}
+      note={{ value: draft.note, onChange: (note) => update({ note }) }}
+      otherWallet={{ checked: slot === 'secondary', onChange: (other) => selectSlot(other ? 'secondary' : 'primary') }}
     />
   )
 

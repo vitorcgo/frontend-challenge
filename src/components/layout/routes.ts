@@ -4,6 +4,7 @@ export const paths = {
   register: '/cadastro',
   cart: '/carrinho',
   profile: '/perfil',
+  wallets: '/carteiras',
 } as const
 
 const MARKET_PREFIXES = ['/nft/', '/carrinho', '/pagamento', '/pedido/']

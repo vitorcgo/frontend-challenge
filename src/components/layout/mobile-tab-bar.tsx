@@ -16,7 +16,7 @@ const ActiveDot = ({ active }: { active: boolean }) => (
   <span aria-hidden className={cn('size-1 rounded-full', active ? 'bg-accent-text' : 'bg-transparent')} />
 )
 
-type TabTarget = { to: '/' } | { to: '/carrinho' } | { to: '/entrar'; redirect?: string } | { href: string }
+type TabTarget = { to: '/' } | { to: '/carrinho' } | { to: '/perfil' } | { to: '/entrar'; redirect?: string }
 
 function TabItem({ icon, label, target, active, left }: { icon: IconName; label: string; target: TabTarget; active: boolean; left: string }) {
   const props = {
@@ -31,13 +31,6 @@ function TabItem({ icon, label, target, active, left }: { icon: IconName; label:
       <ActiveDot active={active} />
     </>
   )
-  if ('href' in target) {
-    return (
-      <a href={target.href} {...props}>
-        {content}
-      </a>
-    )
-  }
   if (target.to === '/entrar') {
     return (
       <Link to="/entrar" search={target.redirect ? { redirect: target.redirect } : {}} activeOptions={EXACT_PATH} {...props}>
@@ -59,8 +52,8 @@ export function MobileTabBar() {
   const { user } = useSession()
   if (buyBarActive) return null
 
-  const profileTarget: TabTarget = user ? { href: paths.profile } : { to: '/entrar', redirect: safeRedirect(href) }
-  const onAccountPage = [paths.profile, paths.login, paths.register].some((path) => pathname.startsWith(path))
+  const profileTarget: TabTarget = user ? { to: '/perfil' } : { to: '/entrar', redirect: safeRedirect(href) }
+  const onAccountPage = [paths.profile, paths.wallets, paths.login, paths.register].some((path) => pathname.startsWith(path))
 
   return (
     <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 h-[126px] md:hidden">
