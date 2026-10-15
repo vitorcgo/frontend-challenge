@@ -1,7 +1,9 @@
 import axios, { isAxiosError, isCancel } from 'axios'
 import { env } from '@/config/env'
 import { apiReady } from '@/lib/api-ready'
+import { GUEST_CART_HEADER } from './contracts'
 import { toApiError } from './errors'
+import { getGuestCartId } from './guest-cart'
 import { getSessionToken, reportInvalidSession } from './session-token'
 
 export const apiClient = axios.create({
@@ -16,6 +18,7 @@ apiClient.interceptors.request.use(async (config) => {
   await apiReady
   const token = getSessionToken()
   if (token) config.headers.set('Authorization', `Bearer ${token}`)
+  else if (config.url?.startsWith('/cart')) config.headers.set(GUEST_CART_HEADER, getGuestCartId())
   return config
 })
 

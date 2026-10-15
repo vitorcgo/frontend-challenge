@@ -25,6 +25,29 @@ test('Início', async ({ page, catalog }) => {
   await expect(page).toHaveScreenshot('inicio-pagina-inteira.png', { fullPage: true })
 })
 
+test('Carrinho', async ({ page, catalog }) => {
+  await catalog.goto('/carrinho')
+  await expect(page.getByText('Seu carrinho está vazio')).toBeVisible()
+  await page.evaluate(async () => {
+    const headers = { 'Content-Type': 'application/json', 'X-Guest-Cart': localStorage.getItem('kurio.cart.guest') ?? '' }
+    for (const body of [
+      { nftId: 'emerald-ape-042', editionId: '1-50', quantity: 2 },
+      { nftId: 'ivory-baron-088', editionId: '1-50', quantity: 1 },
+      { nftId: 'golden-beat-207', editionId: '1-50', quantity: 3 },
+    ]) {
+      await fetch('/api/cart/items', { method: 'POST', headers, body: JSON.stringify(body) })
+    }
+  })
+  await page.reload()
+  await expect(page.getByRole('list', { name: 'Itens do carrinho' }).getByRole('listitem')).toHaveCount(3)
+  await expect(page.getByRole('region', { name: 'Colecionadores também viram' }).getByRole('listitem')).toHaveCount(5)
+  await waitForMedia(page)
+
+  await expect(page).toHaveScreenshot('carrinho-primeira-tela.png')
+  await page.addStyleTag({ content: HIDE_FIXED_BARS })
+  await expect(page).toHaveScreenshot('carrinho-pagina-inteira.png', { fullPage: true })
+})
+
 test('Detalhe do NFT', async ({ page, catalog }) => {
   await catalog.goto('/nft/emerald-ape-042')
   await expect(page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('listitem')).toHaveCount(5)

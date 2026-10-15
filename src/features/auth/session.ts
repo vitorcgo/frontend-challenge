@@ -2,6 +2,9 @@ import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tansta
 import { useEffect, useSyncExternalStore } from 'react'
 import type { LoginRequest, RegisterRequest, Session } from '@/api/contracts'
 import { getSession, login, logout, register } from '@/api/endpoints/auth'
+import { mergeGuestCart } from '@/api/endpoints/cart'
+import { clearGuestCartId, peekGuestCartId } from '@/api/guest-cart'
+import { cartKeys } from '@/features/cart/keys'
 import { getSessionToken, onInvalidSession, setSessionToken, subscribeSessionToken } from '@/api/session-token'
 import { announce } from '@/lib/announce'
 
@@ -36,10 +39,22 @@ export function useSession() {
   }
 }
 
-function startSession(queryClient: QueryClient, session: Session) {
+async function startSession(queryClient: QueryClient, session: Session) {
   clearPrivateData(queryClient)
   queryClient.setQueryData(sessionKeys.current(session.token), { expiresAt: session.expiresAt, user: session.user })
   setSessionToken(session.token)
+
+  // Itens que a pessoa juntou antes de entrar passam para o carrinho da conta.
+  const guestCartId = peekGuestCartId()
+  if (!guestCartId) return
+  try {
+    queryClient.setQueryData(cartKeys.detail(session.user.id), await mergeGuestCart({ guestCartId }))
+    clearGuestCartId()
+    // Uma leitura do carrinho iniciada antes da união terminaria com os itens antigos.
+    void queryClient.invalidateQueries({ queryKey: cartKeys.detail(session.user.id) })
+  } catch {
+    // Se a união falhar, o carrinho do visitante continua salvo e a próxima entrada tenta de novo.
+  }
 }
 
 export function useLogin() {

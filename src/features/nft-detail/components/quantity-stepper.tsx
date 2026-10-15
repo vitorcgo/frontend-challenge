@@ -8,6 +8,8 @@ interface QuantityStepperProps {
   onChange: (value: number) => void
   size?: 'lg' | 'sm'
   label?: string
+  hideLabel?: boolean
+  showLimitHint?: boolean
   className?: string
 }
 
@@ -16,7 +18,16 @@ const buttonSize = {
   sm: 'h-[30px] w-5',
 }
 
-export function QuantityStepper({ value, max, onChange, size = 'lg', label, className }: QuantityStepperProps) {
+export function QuantityStepper({
+  value,
+  max,
+  onChange,
+  size = 'lg',
+  label,
+  hideLabel = false,
+  showLimitHint = true,
+  className,
+}: QuantityStepperProps) {
   const labelId = useId()
   const hintId = useId()
   const disabled = max === 0
@@ -28,7 +39,7 @@ export function QuantityStepper({ value, max, onChange, size = 'lg', label, clas
       <button
         type="button"
         aria-label={isMinus ? 'Diminuir quantidade' : 'Aumentar quantidade'}
-        aria-describedby={isMinus ? undefined : hintId}
+        aria-describedby={isMinus || !showLimitHint ? undefined : hintId}
         disabled={disabled || (isMinus ? value <= 1 : value >= max)}
         onClick={() => onChange(isMinus ? value - 1 : value + 1)}
         className={cn(
@@ -44,7 +55,7 @@ export function QuantityStepper({ value, max, onChange, size = 'lg', label, clas
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <div role="group" aria-labelledby={labelId} className="flex items-center gap-2">
-        <span id={labelId} className={cn('text-body leading-4 font-medium text-subtle-text', !label && 'sr-only')}>
+        <span id={labelId} className={cn('text-body leading-4 font-medium text-subtle-text', (!label || hideLabel) && 'sr-only')}>
           {label ?? 'Quantidade'}
         </span>
         <div className="flex items-center gap-3">
@@ -58,9 +69,11 @@ export function QuantityStepper({ value, max, onChange, size = 'lg', label, clas
           {button('plus')}
         </div>
       </div>
-      <p id={hintId} role="status" className={cn('text-caption leading-4 text-muted-text', !atLimit && 'sr-only')}>
-        {atLimit ? `Limite de ${max} ${max === 1 ? 'unidade' : 'unidades'} nesta compra.` : ''}
-      </p>
+      {showLimitHint && (
+        <p id={hintId} role="status" className={cn('text-caption leading-4 text-muted-text', !atLimit && 'sr-only')}>
+          {atLimit ? `Limite de ${max} ${max === 1 ? 'unidade' : 'unidades'} nesta compra.` : ''}
+        </p>
+      )}
     </div>
   )
 }

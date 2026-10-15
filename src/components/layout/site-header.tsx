@@ -3,6 +3,7 @@ import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
 import { safeRedirect } from '@/features/auth/redirect'
 import { useLogout, useSession } from '@/features/auth/session'
+import { useCartCount } from '@/features/cart/use-cart'
 import { EXACT_LOCATION, EXACT_PATH } from '@/lib/link-options'
 import { cn } from '@/lib/utils'
 import { HeaderSearch } from './header-search'
@@ -79,8 +80,9 @@ function AccountActions() {
   )
 }
 
-export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
+export function SiteHeader() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const cartCount = useCartCount()
   const market = isMarketPath(pathname)
 
   const items: NavItem[] = [
@@ -107,9 +109,9 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
 
         <div className="flex items-center gap-4 xl:gap-7">
           <HeaderSearch />
-          <a
-            href={paths.cart}
-            aria-label={cartCount > 0 ? `Carrinho, ${cartCount} itens` : 'Carrinho'}
+          <Link
+            to="/carrinho"
+            aria-label={cartCount > 0 ? `Carrinho, ${cartCount} ${cartCount === 1 ? 'item' : 'itens'}` : 'Carrinho'}
             className="relative rounded-sm text-cream transition-colors hover:text-accent-text"
           >
             <Icon name="cart" />
@@ -121,7 +123,7 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
                 {cartCount > 9 ? '9+' : cartCount}
               </span>
             )}
-          </a>
+          </Link>
           <AccountActions />
         </div>
       </div>

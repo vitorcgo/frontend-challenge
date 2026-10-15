@@ -4,15 +4,19 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { EditionId, Nft } from '@/api/contracts'
 import { isApiError } from '@/api/errors'
 import { Icon } from '@/components/icon'
+import { Breadcrumb } from '@/components/layout/breadcrumb'
 import { useRegisterMobileBuyBar } from '@/components/layout/mobile-buy-bar-store'
 import { Button } from '@/components/ui/button'
+import { useAddToCart } from '@/features/cart/use-cart'
 import { nftDetailQueryOptions } from '@/features/catalog/queries'
 import { FavoriteButton, FavoriteIconButton } from '@/features/favorites/favorite-button'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { announce } from '@/lib/announce'
 import { multiplyEth } from '@/lib/eth'
 import { formatEth, pluralize } from '@/lib/format'
-import { EXACT_LOCATION, EXACT_PATH } from '@/lib/link-options'
+import { EXACT_LOCATION } from '@/lib/link-options'
+import { cn } from '@/lib/utils'
 import { maxQuantity, pickEdition } from '../edition'
 import { EditionPicker } from './edition-picker'
 import { DesktopGallery, MobileGallery } from './nft-gallery'
@@ -23,25 +27,48 @@ import { RatingStars } from './rating-stars'
 import { RelatedNfts } from './related-nfts'
 import { ShareLinks } from './share-links'
 
-const SOON = 'Disponível em breve'
+interface PurchaseState {
+  addToCart: (goToCart: boolean) => void
+  pending: boolean
+  message?: { kind: 'error' | 'added'; text: string }
+}
 
-function Breadcrumb() {
+function usePurchase(nft: Nft, edition: ReturnType<typeof pickEdition>, quantity: number): PurchaseState {
+  const add = useAddToCart()
+  const navigate = useNavigate()
+  const [message, setMessage] = useState<PurchaseState['message']>()
+
+  const addToCart = (goToCart: boolean) => {
+    if (!edition || quantity < 1) return
+    setMessage(undefined)
+    add.mutate(
+      { nftId: nft.id, editionId: edition.id, quantity },
+      {
+        onSuccess: () => {
+          announce(`${nft.name} adicionado ao carrinho.`)
+          if (goToCart) void navigate({ to: '/carrinho' })
+          else setMessage({ kind: 'added', text: 'Adicionado ao carrinho.' })
+        },
+        onError: (error) =>
+          setMessage({ kind: 'error', text: isApiError(error) ? error.message : 'Não foi possível adicionar ao carrinho.' }),
+      },
+    )
+  }
+
+  return { addToCart, pending: add.isPending, message }
+}
+
+function PurchaseMessage({ message, className }: { message: PurchaseState['message']; className?: string }) {
+  if (!message) return null
   return (
-    <nav aria-label="Trilha de navegação">
-      <ol className="flex items-center gap-1 text-body leading-4 font-bold text-cream">
-        <li>
-          <Link to="/" activeOptions={EXACT_PATH} className="rounded-sm hover:text-accent-text">
-            Início
-          </Link>
-        </li>
-        <li aria-hidden>/</li>
-        <li>
-          <Link to="/" hash="mercado" activeOptions={EXACT_LOCATION} className="rounded-sm hover:text-accent-text">
-            Mercado
-          </Link>
-        </li>
-      </ol>
-    </nav>
+    <p role={message.kind === 'error' ? 'alert' : 'status'} className={cn('text-caption leading-4', message.kind === 'error' ? 'text-coral' : 'text-subtle-text', className)}>
+      {message.text}{' '}
+      {message.kind === 'added' && (
+        <Link to="/carrinho" className="rounded-sm font-bold text-accent-text underline-offset-4 hover:underline">
+          Ver carrinho
+        </Link>
+      )}
+    </p>
   )
 }
 
@@ -82,6 +109,7 @@ interface ViewProps {
 }
 
 function DesktopDetail({ nft, edition, onSelectEdition, quantity, max, onQuantityChange }: ViewProps) {
+  const purchase = usePurchase(nft, edition, quantity)
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-24 px-6 pt-8 xl:px-0">
       <div className="flex flex-col gap-3">
@@ -124,12 +152,17 @@ function DesktopDetail({ nft, edition, onSelectEdition, quantity, max, onQuantit
             <div className="flex flex-wrap items-start justify-between gap-4">
               <QuantityStepper value={quantity} max={max} onChange={onQuantityChange} />
               <div className="flex items-start gap-2">
-                <Button disabled title={SOON} className="h-10 w-[130px] rounded-md text-sm leading-5 font-bold">
+                <Button
+                  onClick={() => purchase.addToCart(true)}
+                  disabled={!edition || purchase.pending}
+                  className="h-10 w-[130px] rounded-md text-sm leading-5 font-bold"
+                >
                   COMPRAR
                 </Button>
                 <FavoriteButton nftId={nft.id} />
               </div>
             </div>
+            <PurchaseMessage message={purchase.message} />
             {!edition && <SoldOutNotice />}
 
             <div className="flex flex-col gap-3">
@@ -195,13 +228,14 @@ function MobileDetail({ nft, edition, onSelectEdition, quantity, max, onQuantity
         <RelatedNfts nft={nft} />
       </div>
 
-      <MobileBuyBar nft={nft} quantity={quantity} max={max} onQuantityChange={onQuantityChange} />
+      <MobileBuyBar nft={nft} edition={edition} quantity={quantity} max={max} onQuantityChange={onQuantityChange} />
     </div>
   )
 }
 
-function MobileBuyBar({ nft, quantity, max, onQuantityChange }: Pick<ViewProps, 'nft' | 'quantity' | 'max' | 'onQuantityChange'>) {
+function MobileBuyBar({ nft, edition, quantity, max, onQuantityChange }: Omit<ViewProps, 'onSelectEdition'>) {
   useRegisterMobileBuyBar()
+  const purchase = usePurchase(nft, edition, quantity)
   const barRef = useRef<HTMLDivElement>(null)
   const [height, setHeight] = useState(0)
 
@@ -225,20 +259,21 @@ function MobileBuyBar({ nft, quantity, max, onQuantityChange }: Pick<ViewProps, 
             {formatEth(multiplyEth(nft.price, Math.max(quantity, 1)))}
           </p>
         </div>
+        <PurchaseMessage message={purchase.message} className="-mb-2" />
         <div className="flex gap-3">
           <button
             type="button"
-            disabled
-            title={SOON}
+            onClick={() => purchase.addToCart(true)}
+            disabled={!edition || purchase.pending}
             className="h-[60px] flex-1 rounded-[40px] bg-[linear-gradient(100.4deg,#d28a4c_4%,rgb(210_138_76/0.8)_122%)] text-base leading-5 font-bold text-ink disabled:opacity-50"
           >
             Comprar NFT
           </button>
           <button
             type="button"
-            disabled
-            title={SOON}
-            aria-label={`Adicionar ao carrinho (${SOON.toLowerCase()})`}
+            onClick={() => purchase.addToCart(false)}
+            disabled={!edition || purchase.pending}
+            aria-label="Adicionar ao carrinho"
             className="grid size-[60px] shrink-0 place-items-center rounded-full border border-line bg-surface-raised text-accent-text disabled:opacity-60"
           >
             <Icon name="shop" />

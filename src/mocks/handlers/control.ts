@@ -5,6 +5,7 @@ import { resetDatabase, write } from '../db'
 import { API, controlRoute, notFound, param, readJson } from '../http'
 import { toNft } from '../mappers'
 import { resetNetworkState } from '../network'
+import { connectedClients, disconnectAll, publishNftUpdated, replayEvent, resetRealtime } from '../realtime'
 import { getScenario, isScenarioId, SCENARIOS, setScenario, type ScenarioId } from '../scenarios'
 
 const CONTROL = `${API}/__mock`
@@ -48,6 +49,7 @@ export const controlHandlers = [
       await resetDatabase()
       setScenario(body.scenario ?? 'default')
       resetNetworkState()
+      resetRealtime()
       return HttpResponse.json(scenarioState())
     }),
   ),
@@ -79,7 +81,30 @@ export const controlHandlers = [
         nft.version += 1
         return nft
       })
+      // A mudança sai pela API e pelo Socket.IO, como num servidor real (§6).
+      publishNftUpdated(updated)
       return HttpResponse.json<Nft>(toNft(updated))
     }),
+  ),
+
+  // Reenvia um evento já publicado: `index` -1 é o último (duplicado), -2 o anterior (antigo).
+  http.post(
+    `${CONTROL}/realtime/replay`,
+    controlRoute(async ({ request }) => {
+      const { index } = await readJson(request, z.object({ index: z.number().int() }))
+      const event = replayEvent(index)
+      if (!event) throw notFound('Nenhum evento publicado nessa posição.')
+      return HttpResponse.json(event)
+    }),
+  ),
+
+  http.post(
+    `${CONTROL}/realtime/disconnect`,
+    controlRoute(() => HttpResponse.json({ closed: disconnectAll() })),
+  ),
+
+  http.get(
+    `${CONTROL}/realtime`,
+    controlRoute(() => HttpResponse.json({ connected: connectedClients() })),
   ),
 ]

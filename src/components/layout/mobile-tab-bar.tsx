@@ -16,7 +16,7 @@ const ActiveDot = ({ active }: { active: boolean }) => (
   <span aria-hidden className={cn('size-1 rounded-full', active ? 'bg-accent-text' : 'bg-transparent')} />
 )
 
-type TabTarget = { to: '/' } | { to: '/entrar'; redirect?: string } | { href: string }
+type TabTarget = { to: '/' } | { to: '/carrinho' } | { to: '/entrar'; redirect?: string } | { href: string }
 
 function TabItem({ icon, label, target, active, left }: { icon: IconName; label: string; target: TabTarget; active: boolean; left: string }) {
   const props = {
@@ -46,7 +46,7 @@ function TabItem({ icon, label, target, active, left }: { icon: IconName; label:
     )
   }
   return (
-    <Link to="/" activeOptions={EXACT_PATH} {...props}>
+    <Link to={target.to} activeOptions={EXACT_PATH} {...props}>
       {content}
     </Link>
   )
@@ -89,7 +89,7 @@ export function MobileTabBar() {
       >
         <Icon name="heart-filled" label="Lista de interesse (disponível em breve)" />
       </span>
-      <TabItem icon="shop" label="Carrinho" target={{ href: paths.cart }} active={pathname.startsWith(paths.cart)} left="72.95%" />
+      <TabItem icon="shop" label="Carrinho" target={{ to: '/carrinho' }} active={pathname.startsWith(paths.cart)} left="72.95%" />
       <TabItem icon="user-nav" label="Perfil" target={profileTarget} active={onAccountPage} left="87.9%" />
     </nav>
   )

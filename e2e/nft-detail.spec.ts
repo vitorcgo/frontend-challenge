@@ -113,10 +113,9 @@ test('"Mais desta coleção" mostra outros NFTs da mesma coleção', async ({ pa
   await expect(page.getByRole('heading', { level: 1 })).not.toHaveText('Emerald Ape #042')
 })
 
-test('compra e favoritos não aparentam funcionar antes de existirem', async ({ page, catalog }) => {
-  await catalog.goto(EMERALD)
-  const buy = page.getByRole('button', { name: /^(COMPRAR|Comprar NFT)$/ })
-  await expect(buy).toBeDisabled()
+test('NFT esgotado não deixa comprar', async ({ page, catalog }) => {
+  await catalog.goto('/nft/cedar-baron-931')
+  await expect(page.getByRole('button', { name: /^(COMPRAR|Comprar NFT)$/ })).toBeDisabled()
 })
 
 test('sem rolagem horizontal, inclusive com preço anterior e textos longos', async ({ page, catalog }) => {

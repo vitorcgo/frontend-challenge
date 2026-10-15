@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { NotFound } from '@/components/not-found'
 import { useSessionLifecycle } from '@/features/auth/session'
+import { useRealtime } from '@/features/realtime/use-realtime'
 import { cn } from '@/lib/utils'
 
 interface RouterContext {
@@ -23,6 +24,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootLayout() {
   const buyBarActive = useMobileBuyBarActive()
   useSessionLifecycle()
+  useRealtime()
   return (
     <div className="flex min-h-dvh flex-col">
       <a

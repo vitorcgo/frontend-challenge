@@ -1,4 +1,4 @@
-import type { IsoDateTime, Network, Wallet } from '@/api/contracts'
+import type { EditionId, IsoDateTime, Network, Wallet } from '@/api/contracts'
 import { buildNftFixtures, type NftRecord } from './fixtures/nfts'
 import { DEMO_PASSWORD, FIXTURES_CREATED_AT, USER_FIXTURES } from './fixtures/users'
 import { hashPassword, type PasswordHash } from './passwords'
@@ -34,6 +34,20 @@ export interface ConnectionRecord {
   connectedAt: IsoDateTime
 }
 
+export interface CartItemRecord {
+  id: string
+  nftId: string
+  editionId: EditionId
+  quantity: number
+  addedPrice: string
+}
+
+export interface CartRecord {
+  items: CartItemRecord[]
+  couponCode: string | null
+  updatedAt: IsoDateTime
+}
+
 export interface MockDatabase {
   schemaVersion: number
   users: UserRecord[]
@@ -42,10 +56,12 @@ export interface MockDatabase {
   favorites: Record<string, string[]>
   wallets: WalletRecord[]
   connections: ConnectionRecord[]
+  /** Chave `user:<id>` para quem entrou na conta e `guest:<id>` para visitante. */
+  carts: Record<string, CartRecord>
 }
 
 // Mudou a forma do banco? Incremente para descartar dados antigos salvos no navegador.
-const SCHEMA_VERSION = 3
+const SCHEMA_VERSION = 4
 const STORAGE_KEY = 'kurio.mocks.db'
 
 let state: MockDatabase | null = null
@@ -83,6 +99,7 @@ async function seed(): Promise<MockDatabase> {
       })),
     ),
     connections: [],
+    carts: {},
   }
 }
 

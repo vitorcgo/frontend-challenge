@@ -7,5 +7,6 @@ export function createSocket(): Socket {
     // O MSW intercepta WebSocket, mas não o long-polling HTTP do Engine.IO.
     transports: ['websocket'],
     autoConnect: false,
+    forceNew: true,
   })
 }
