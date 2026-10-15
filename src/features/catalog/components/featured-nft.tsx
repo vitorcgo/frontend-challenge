@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { isApiError } from '@/api/errors'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -44,8 +45,7 @@ export function FeaturedNft() {
         </h2>
         <p className="w-full text-center text-title leading-4 font-bold text-cream">{subtitle}</p>
       </div>
-      {/* A rota do detalhe entra na próxima fatia; até lá, link comum. */}
-      <a href={`/nft/${nft.id}`} className="block rounded-[22px]">
+      <Link to="/nft/$id" params={{ id: nft.id }} className="block rounded-[22px]">
         <img
           src={nft.image.large}
           srcSet={`${nft.image.small} 480w, ${nft.image.large} 960w`}
@@ -57,7 +57,7 @@ export function FeaturedNft() {
           decoding="async"
           className="h-[368px] w-full rounded-[22px] object-cover"
         />
-      </a>
+      </Link>
       {/* Formas decorativas do Figma. */}
       <span aria-hidden className="absolute top-[299px] left-4 size-[22px] rounded-[7px] border-2 border-[#46a358] opacity-20" />
       <span

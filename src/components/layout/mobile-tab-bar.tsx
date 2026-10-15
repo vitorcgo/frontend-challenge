@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import notch from '@/assets/decorations/tab-bar-notch.svg'
 import { Icon, type IconName } from '@/components/icon'
 import { cn } from '@/lib/utils'
-import { paths } from './routes'
+import { hasMobileBuyBar, paths } from './routes'
 import { EXACT_PATH } from '@/lib/link-options'
 
 const itemClass =
@@ -42,6 +42,7 @@ function TabItem({ icon, label, href, active, left }: { icon: IconName; label: s
 /** Navegação do mobile (Figma "Tab Bar"). Telas a partir de 768 px usam o cabeçalho. */
 export function MobileTabBar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
+  if (hasMobileBuyBar(pathname)) return null
 
   return (
     <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 h-[126px] md:hidden">

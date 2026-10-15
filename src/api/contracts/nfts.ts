@@ -62,6 +62,8 @@ export interface NftSummary {
 }
 
 export interface Nft extends NftSummary {
+  /** Imagens da galeria do detalhe; a primeira é a mesma de `image`. */
+  gallery: NftImage[]
   description: string
   story: string[]
   collection: { id: string; name: string }

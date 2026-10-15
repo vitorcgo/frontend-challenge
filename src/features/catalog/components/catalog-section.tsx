@@ -181,7 +181,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
           <TabsList
             variant="line"
             aria-label="Filtrar por lançamento"
-            className="h-auto max-w-full flex-wrap justify-start gap-x-1 gap-y-3 p-0 md:gap-x-5"
+            className="max-w-full flex-wrap group-data-[orientation=horizontal]/tabs:h-auto justify-start gap-x-1 gap-y-3 p-0 md:gap-x-5"
           >
             {NFT_TABS.map((tab) => (
               <TabsTrigger

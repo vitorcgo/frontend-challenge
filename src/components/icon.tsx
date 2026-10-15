@@ -31,6 +31,7 @@ import star from '@/assets/icons/star.svg'
 import userNav from '@/assets/icons/user-nav.svg'
 import user from '@/assets/icons/user.svg'
 import wallet from '@/assets/icons/wallet.svg'
+import zoom from '@/assets/icons/zoom.svg'
 import { cn } from '@/lib/utils'
 
 /** [arquivo, largura, altura] com o tamanho original de cada ícone no Figma. */
@@ -68,6 +69,7 @@ const ICONS = {
   'user-nav': [userNav, 20, 20],
   user: [user, 18, 18],
   wallet: [wallet, 24, 24],
+  zoom: [zoom, 20, 20],
 } as const satisfies Record<string, readonly [string, number, number]>
 
 export type IconName = keyof typeof ICONS

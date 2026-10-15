@@ -12,3 +12,8 @@ const MARKET_PREFIXES = ['/nft/', '/carrinho', '/pagamento', '/pedido/']
 export function isMarketPath(pathname: string): boolean {
   return MARKET_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 }
+
+/** No detalhe do NFT, o mobile troca a barra de navegação pela barra de compra (Figma "Buy Bar"). */
+export function hasMobileBuyBar(pathname: string): boolean {
+  return pathname.startsWith('/nft/')
+}

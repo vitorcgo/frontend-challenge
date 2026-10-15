@@ -10,6 +10,8 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   expect: {
+    // A primeira carga de cada teste inicia os mocks do zero; com vários testes em paralelo, 5 s ficava no limite.
+    timeout: 10_000,
     // Baselines estáveis: sem animações nem cursor piscando nas capturas.
     toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 },
   },

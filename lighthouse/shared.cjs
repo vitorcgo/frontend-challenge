@@ -11,7 +11,8 @@ module.exports = function createConfig(profile, settings = {}) {
       collect: {
         startServerCommand: `pnpm preview --port ${port} --strictPort`,
         startServerReadyPattern: 'Local',
-        url: [`http://localhost:${port}/`],
+        // §10: Início e detalhe do NFT.
+        url: [`http://localhost:${port}/`, `http://localhost:${port}/nft/emerald-ape-042`],
         numberOfRuns: 3,
         chromePath,
         settings,

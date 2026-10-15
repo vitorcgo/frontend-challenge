@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import type { NftSummary } from '@/api/contracts'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEth } from '@/lib/format'
@@ -9,9 +10,8 @@ interface NftCardProps {
 }
 
 export function NftCard({ nft, priority = false }: NftCardProps) {
-  // A rota do detalhe entra na próxima fatia; até lá, link comum.
   return (
-    <a href={`/nft/${nft.id}`} className="group flex flex-col gap-2 rounded-[20px] md:gap-3 md:rounded-none">
+    <Link to="/nft/$id" params={{ id: nft.id }} className="group flex flex-col gap-2 rounded-[20px] md:gap-3 md:rounded-none">
       <div className="relative overflow-hidden rounded-[20px] bg-[linear-gradient(139.5deg,var(--color-surface-card)_12%,var(--color-surface-raised)_106.6%)] px-1 pt-3 pb-5 md:rounded-none md:bg-surface-card md:bg-none md:pt-6 md:pb-7">
         <img
           src={nft.image.small}
@@ -47,7 +47,7 @@ export function NftCard({ nft, priority = false }: NftCardProps) {
           )}
         </p>
       </div>
-    </a>
+    </Link>
   )
 }
 

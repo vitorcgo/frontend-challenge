@@ -31,6 +31,9 @@ const IMAGES: Record<ImageKey, { alt: string; collection: string; attributes: st
   },
 }
 
+// O Figma mostra quatro miniaturas com a mesma obra; os assets do arquivo têm uma imagem por NFT.
+const GALLERY_SIZE = 4
+
 const COLLECTIONS: Record<string, { name: string; creator: string; contract: string }> = {
   'kurio-apes': { name: 'Kurio Apes', creator: 'Nova Sato', contract: '0x7A42C3B1E5D9F0A8B6C4E2D1F3A5B7C9D0E119E8' },
   'nomad-society': { name: 'Nomad Society', creator: 'Iris Okafor', contract: '0x3E91A7C5B2D8F4E6A0C1B9D7F3E5A2C8B6D40F71' },
@@ -122,15 +125,18 @@ export function buildNftFixtures(): NftRecord[] {
     const editions = buildEditions(index)
     const isEmeraldApe = index === 0
 
+    const mainImage = {
+      alt: image.alt,
+      small: `/images/nfts/${imageKey}-480.webp`,
+      large: `/images/nfts/${imageKey}-960.webp`,
+    }
+
     return {
       id: slugify(name),
       name,
       tokenId: `#${tokenNumber.padStart(4, '0')}`,
-      image: {
-        alt: image.alt,
-        small: `/images/nfts/${imageKey}-480.webp`,
-        large: `/images/nfts/${imageKey}-960.webp`,
-      },
+      image: mainImage,
+      gallery: Array.from({ length: GALLERY_SIZE }, () => mainImage),
       category,
       network,
       price,

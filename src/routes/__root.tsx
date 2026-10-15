@@ -1,11 +1,13 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { MobileTabBar } from '@/components/layout/mobile-tab-bar'
+import { hasMobileBuyBar } from '@/components/layout/routes'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import { NotFound } from '@/components/not-found'
+import { cn } from '@/lib/utils'
 
 interface RouterContext {
   queryClient: QueryClient
@@ -17,6 +19,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootLayout() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
   return (
     <div className="flex min-h-dvh flex-col">
       <a
@@ -26,8 +29,12 @@ function RootLayout() {
         Pular para o conteúdo
       </a>
       <SiteHeader />
-      {/* Espaço inferior no mobile para o conteúdo não ficar atrás da barra de navegação fixa. */}
-      <main id="conteudo" tabIndex={-1} className="flex-1 pb-[140px] outline-none md:pb-0">
+      {/* Espaço inferior no mobile para o conteúdo não ficar atrás da barra fixa (navegação ou compra). */}
+      <main
+        id="conteudo"
+        tabIndex={-1}
+        className={cn('flex-1 outline-none md:pb-0', hasMobileBuyBar(pathname) ? 'pb-[190px]' : 'pb-[140px]')}
+      >
         <Outlet />
       </main>
       <SiteFooter />
