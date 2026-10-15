@@ -4,7 +4,6 @@ import { lazyWithPreload } from '@/lib/lazy'
 
 const HeaderSearchDialog = lazyWithPreload(() => import('./header-search-dialog'))
 
-/** Lupa do cabeçalho. O diálogo (Radix) só é baixado no primeiro uso. */
 export function HeaderSearch() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)

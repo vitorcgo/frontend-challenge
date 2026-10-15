@@ -1,8 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './support/catalog'
 
-// §9: regressão visual de Início e detalhe (carrinho e pagamento entram com as telas), com dados estáveis.
-
 // Na captura de página inteira, as barras fixas do mobile (navegação e compra) seriam desenhadas no meio da página.
 // Elas ficam de fora dessa captura e aparecem na da primeira tela, no lugar real.
 const HIDE_FIXED_BARS = '.fixed.bottom-0 { visibility: hidden !important; }'

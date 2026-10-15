@@ -1,7 +1,6 @@
 import { Icon } from '@/components/icon'
 import { cn } from '@/lib/utils'
 
-/** Cinco estrelas como no Figma: as cheias em laranja, as restantes em tom claro (4.8 mostra quatro cheias). */
 export function RatingStars({ average, className }: { average: string; className?: string }) {
   const filled = Math.floor(Number(average))
   return (

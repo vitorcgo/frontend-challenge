@@ -8,11 +8,9 @@ import { featuredNftQueryOptions } from '../queries'
 const frame =
   'relative flex flex-col gap-4 overflow-hidden bg-[linear-gradient(180deg,rgb(210_138_76/0.1),rgb(210_138_76/0.03))] pt-6 pb-1'
 
-/** Bloco "NFT em destaque" da barra lateral; o NFT vem da API (curadoria), nunca fixo na interface. */
 export function FeaturedNft() {
   const { data, isPending, isError, error, refetch } = useQuery(featuredNftQueryOptions())
 
-  // Sem destaque no momento é estado vazio, não erro: o bloco simplesmente não aparece.
   if (isError && isApiError(error) && error.code === 'NOT_FOUND') return null
 
   if (isPending) {
@@ -58,7 +56,6 @@ export function FeaturedNft() {
           className="h-[368px] w-full rounded-[22px] object-cover"
         />
       </Link>
-      {/* Formas decorativas do Figma. */}
       <span aria-hidden className="absolute top-[299px] left-4 size-[22px] rounded-[7px] border-2 border-[#46a358] opacity-20" />
       <span
         aria-hidden

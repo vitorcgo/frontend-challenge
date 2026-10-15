@@ -1,7 +1,3 @@
-/**
- * Anúncios para leitores de tela (§8: feedback acessível de mutations e eventos).
- * Um único `role="status"` fica no layout raiz; trocar o texto faz o leitor anunciar.
- */
 let message = ''
 const listeners = new Set<() => void>()
 

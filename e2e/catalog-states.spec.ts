@@ -1,8 +1,5 @@
 import { expect, FIRST_PAGE, test } from './support/catalog'
 
-// §9, item 12: skeletons durante carregamento lento, feedback de falha e recuperação após nova tentativa.
-// Também cobre resultado vazio e respostas fora de ordem (§3 e §6).
-
 /** Maior latência do cenário `variable-latency` (100 ms a 2 s): depois dela nenhuma resposta antiga chega mais. */
 const MAX_VARIABLE_LATENCY_MS = 2_000
 
@@ -43,7 +40,6 @@ test('troca de página mantém a grade anterior e avisa a atualização', async 
 })
 
 test('avisa quando a conexão está mais lenta que o normal', async ({ page, catalog }) => {
-  // Relógio controlado: o aviso aparece após 4 s de espera sem o teste esperar esse tempo de verdade.
   await page.clock.install()
   await catalog.goto('/', 'timeout')
   await expect(catalog.skeleton).toBeVisible()
@@ -56,7 +52,6 @@ test('avisa quando a conexão está mais lenta que o normal', async ({ page, cat
 test('erro do servidor mostra a falha e "Tentar novamente" recupera', async ({ page, catalog }) => {
   await catalog.goto('/', 'server-error')
   const alert = page.getByRole('alert').filter({ hasText: 'Não foi possível carregar os NFTs' })
-  // Duas novas tentativas automáticas (2 s e 4 s) antes de mostrar o erro.
   await expect(alert).toBeVisible({ timeout: 15_000 })
   await expect(alert).toContainText('Erro interno no servidor')
 

@@ -11,7 +11,6 @@ interface GalleryProps {
   images: NftImage[]
 }
 
-/** Desktop (Figma "Product Images"): miniaturas à esquerda, imagem grande e lupa para ampliar. */
 export function DesktopGallery({ name, images }: GalleryProps) {
   const [index, setIndex] = useState(0)
   const [zoomOpen, setZoomOpen] = useState(false)
@@ -78,7 +77,6 @@ export function DesktopGallery({ name, images }: GalleryProps) {
   )
 }
 
-/** Mobile (Figma "Hero"): imagens lado a lado com deslize e indicador de posição (pílula na atual). */
 export function MobileGallery({ images }: GalleryProps) {
   const [index, setIndex] = useState(0)
 
@@ -89,7 +87,6 @@ export function MobileGallery({ images }: GalleryProps) {
 
   return (
     <div className="relative">
-      {/* Focável: pelo teclado, as setas rolam as imagens. */}
       <ul
         tabIndex={0}
         aria-label="Imagens da obra, deslize para ver as outras"
@@ -112,7 +109,6 @@ export function MobileGallery({ images }: GalleryProps) {
           </li>
         ))}
       </ul>
-      {/* Indicador de posição do Figma: pontos de 7 px são pequenos demais para toque, então não são botões. */}
       <div aria-hidden className="absolute inset-x-0 bottom-[50px] flex justify-center gap-[7px]">
         {images.map((_, imageIndex) => (
           <span

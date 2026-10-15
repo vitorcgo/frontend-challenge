@@ -1,9 +1,5 @@
-/**
- * Versão mínima do `tough-cookie`, usada só pelo MSW através de um alias no `vite.config.ts`.
- * O pacote original traz a lista pública de domínios (`tldts`, cerca de 257 KB) para validar cookies,
- * e o app não usa cookie (a sessão vai no cabeçalho Authorization). Aqui cada cookie é guardado
- * por domínio, só com nome e valor; atributos como Expires e Path são ignorados.
- */
+// Substitui o `tough-cookie` do MSW (alias no vite.config.ts): o original traz ~257 KB de lista de domínios
+// e o app não usa cookie. Guarda só nome e valor por domínio.
 
 interface CookieJson {
   key: string

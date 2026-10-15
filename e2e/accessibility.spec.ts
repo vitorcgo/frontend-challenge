@@ -1,7 +1,5 @@
 import { expect, test } from './support/catalog'
 
-// §9, item 11 (parte do catálogo): navegação por teclado e foco de diálogos e gavetas.
-
 test('link "Pular para o conteúdo" é o primeiro Tab e leva ao conteúdo', async ({ page, catalog }) => {
   await catalog.goto()
   await expect(catalog.cards.first()).toBeVisible()
@@ -30,7 +28,6 @@ test('foco visível nos controles do catálogo', async ({ page, catalog }) => {
   await page.keyboard.press('ArrowRight')
   const tab = page.getByRole('tab', { name: 'Novos lançamentos' })
   await expect(tab).toBeFocused()
-  // Contorno sólido do projeto (cor de destaque); o padrão do navegador seria "auto".
   const outline = await tab.evaluate((element) => {
     const style = getComputedStyle(element)
     return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) }

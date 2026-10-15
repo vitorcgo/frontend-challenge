@@ -2,7 +2,6 @@ import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import type { NftListQuery } from '@/api/contracts'
 import { getFeaturedNft, getNft, listNfts } from '@/api/endpoints/nfts'
 
-/** Remove valores vazios para que a mesma busca gere sempre a mesma chave de cache. */
 function normalize(query: NftListQuery): NftListQuery {
   return Object.fromEntries(
     Object.entries(query).filter(([, value]) => value !== undefined && value !== '' && !(Array.isArray(value) && !value.length)),
@@ -29,9 +28,7 @@ export function nftListQueryOptions(query: NftListQuery) {
   const params = normalize(query)
   return queryOptions({
     queryKey: nftKeys.list(params),
-    // O signal cancela a requisição quando a busca muda, então resposta antiga nunca sobrescreve a nova.
     queryFn: ({ signal }) => listNfts(params, signal),
-    // Mantém a página anterior visível enquanto a próxima carrega.
     placeholderData: keepPreviousData,
   })
 }

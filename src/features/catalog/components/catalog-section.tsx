@@ -21,11 +21,9 @@ import { EXACT_LOCATION } from '@/lib/link-options'
 
 const SLOW_REQUEST_MS = 4000
 
-// Select e Slider (Radix) saem do carregamento inicial; no mobile só são baixados se a gaveta for aberta.
 const SortSelect = lazyWithPreload(() => import('./sort-select'))
 const CatalogSidebar = lazyWithPreload(() => import('./catalog-sidebar'))
 
-/** Ocupa o mesmo espaço da ordenação enquanto ela carrega, para nada pular na tela. */
 function SortSelectPlaceholder({ value }: { value: NftSort }) {
   return (
     <div aria-hidden className="flex items-center gap-3 text-body whitespace-nowrap text-cream">
@@ -126,7 +124,6 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
           aria-busy={isPlaceholderData}
           className={cn(
             'grid grid-cols-2 gap-x-4 gap-y-6 pb-8 transition-opacity md:grid-cols-3 md:gap-x-6 md:gap-y-10 md:pb-0 xl:gap-x-[34px] xl:gap-y-[72px]',
-            // No mobile, a coluna da direita desce 32 px, como no Figma.
             'max-md:[&>li:nth-child(even)]:translate-y-8',
             isPlaceholderData && 'opacity-60',
           )}
@@ -154,7 +151,6 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
       <h2 id={panelHeadingId} className="sr-only">
         Mercado de NFTs
       </h2>
-      {/* Só monta a barra lateral onde ela aparece: abaixo de 1280 px os filtros vivem na gaveta. */}
       {hasSidebar && (
         <aside aria-label="Filtros do catálogo" className="flex flex-col gap-6">
           <Suspense fallback={<div className="h-[640px] bg-surface-card" />}>
@@ -187,7 +183,6 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
               <TabsTrigger
                 key={tab}
                 value={tab}
-                // Figma mobile: 4 px entre a 1ª e a 2ª aba, 16 px entre a 2ª e a 3ª.
                 className={cn(tab === 'trending' && 'max-md:ml-3', "h-auto flex-none rounded-none border-0 p-0 pb-1 text-sm leading-4 font-normal text-cream after:bottom-0 after:bg-brand hover:text-accent-text data-[state=active]:font-bold data-[state=active]:text-accent-text md:pb-[7px] md:text-body md:font-medium md:data-[state=active]:font-medium")}
               >
                 {TAB_LABELS[tab]}

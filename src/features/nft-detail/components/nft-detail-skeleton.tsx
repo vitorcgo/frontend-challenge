@@ -1,6 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-/** Mesmas medidas da tela carregada, para nada pular quando os dados chegam (§8). */
 export function NftDetailSkeleton({ isDesktop }: { isDesktop: boolean }) {
   if (!isDesktop) {
     return (

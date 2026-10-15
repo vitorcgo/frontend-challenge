@@ -6,9 +6,7 @@ interface QuantityStepperProps {
   value: number
   max: number
   onChange: (value: number) => void
-  /** "lg" é o do desktop (botões de 33 x 49,5); "sm" é o da barra de compra do mobile (20 x 30). */
   size?: 'lg' | 'sm'
-  /** Texto curto antes dos botões ("Qtd." no mobile); sem ele o rótulo fica só para leitores de tela. */
   label?: string
   className?: string
 }

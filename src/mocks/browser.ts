@@ -18,7 +18,6 @@ export async function startMocks(): Promise<void> {
 
   const apiPath = new URL(env.apiUrl, window.location.origin).pathname
   await setupWorker(...handlers).start({
-    // Só avisa sobre chamadas da API sem handler; assets e fontes passam direto.
     onUnhandledRequest(request, print) {
       if (new URL(request.url).pathname.startsWith(apiPath)) print.warning()
     },

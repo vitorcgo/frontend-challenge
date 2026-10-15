@@ -12,7 +12,6 @@ import { paths } from './routes'
 const itemClass =
   'absolute top-[59px] flex size-11 -translate-x-1/2 flex-col items-center justify-center gap-1 rounded-full'
 
-/** Ponto sob o item ativo: o estado não depende só da cor (§8 do enunciado). */
 const ActiveDot = ({ active }: { active: boolean }) => (
   <span aria-hidden className={cn('size-1 rounded-full', active ? 'bg-accent-text' : 'bg-transparent')} />
 )
@@ -33,7 +32,6 @@ function TabItem({ icon, label, target, active, left }: { icon: IconName; label:
     </>
   )
   if ('href' in target) {
-    // Rotas que ainda não existem usam <a>; viram Link tipado quando a tela for criada.
     return (
       <a href={target.href} {...props}>
         {content}
@@ -54,7 +52,6 @@ function TabItem({ icon, label, target, active, left }: { icon: IconName; label:
   )
 }
 
-/** Navegação do mobile (Figma "Tab Bar"). Telas a partir de 768 px usam o cabeçalho. */
 export function MobileTabBar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const href = useRouterState({ select: (state) => state.location.href })
@@ -62,13 +59,11 @@ export function MobileTabBar() {
   const { user } = useSession()
   if (buyBarActive) return null
 
-  // Sem sessão, "Perfil" leva ao login e volta para esta tela depois.
   const profileTarget: TabTarget = user ? { href: paths.profile } : { to: '/entrar', redirect: safeRedirect(href) }
   const onAccountPage = [paths.profile, paths.login, paths.register].some((path) => pathname.startsWith(path))
 
   return (
     <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 h-[126px] md:hidden">
-      {/* A curva central é o trecho original do Figma; as laterais esticam para qualquer largura. */}
       <div aria-hidden className="absolute inset-x-0 bottom-0 flex h-[95px] drop-shadow-[0_-10px_15px_rgb(10_6_4/0.45)]">
         <div className="flex-1 rounded-tl-[29px] bg-surface-card" />
         <img src={notch} alt="" width={151.7} height={95} className="h-[95px] w-[151.7px] shrink-0" />

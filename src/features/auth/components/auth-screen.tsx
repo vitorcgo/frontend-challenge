@@ -29,7 +29,6 @@ const COPY = {
 
 const SOON = 'disponível em breve'
 
-/** Login social e recuperação de senha estão no Figma, mas fora do escopo: aparecem sem fingir que funcionam (§3). */
 function SocialButtons({ className }: { className?: string }) {
   const providers = [
     { name: 'Google', logo: googleLogo },
@@ -82,7 +81,6 @@ function useFinish(redirect: string | undefined) {
   const navigate = useNavigate()
   return (name: string) => {
     announce(`Você entrou como ${name}.`)
-    // Volta para a tela de onde a pessoa veio (§3: retorno ao fluxo anterior).
     void navigate({ href: redirect ?? '/', replace: true })
   }
 }
@@ -96,7 +94,6 @@ function AuthForm({ mode, redirect, submitLabel }: { mode: Mode; redirect?: stri
   )
 }
 
-/** Desktop: modal sobre a Início, com as abas "Entrar | Criar conta" (Figma "Sign In Modal" e "Sign Up Modal"). */
 function AuthDialog({ mode, redirect }: { mode: Mode; redirect?: string }) {
   const router = useRouter()
   const navigate = useNavigate()
@@ -125,7 +122,6 @@ function AuthDialog({ mode, redirect }: { mode: Mode; redirect?: string }) {
           showCloseButton={false}
           // O Figma não escurece a página atrás do modal.
           overlayClassName="bg-transparent"
-          // O foco começa no primeiro campo, não no botão de fechar.
           onOpenAutoFocus={(event) => {
             event.preventDefault()
             ;(event.currentTarget as HTMLElement).querySelector('input')?.focus()
@@ -158,7 +154,6 @@ function AuthDialog({ mode, redirect }: { mode: Mode; redirect?: string }) {
             <Divider />
             <SocialButtons className="px-10 sm:px-20" />
           </div>
-          {/* Faixa laranja da base do modal no Figma. */}
           <span aria-hidden className="absolute inset-x-0 bottom-0 h-2.5 bg-brand" />
         </DialogContent>
       </Dialog>
@@ -166,7 +161,6 @@ function AuthDialog({ mode, redirect }: { mode: Mode; redirect?: string }) {
   )
 }
 
-/** Mobile: tela cheia com a marca no topo (Figma "Mobile / Login" e "Mobile / Cadastro"). */
 function AuthPage({ mode, redirect }: { mode: Mode; redirect?: string }) {
   const copy = COPY[mode]
   const other: Mode = mode === 'login' ? 'register' : 'login'

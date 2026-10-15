@@ -33,7 +33,6 @@ function RootLayout() {
       </a>
       <SiteHeader />
       <SessionExpiredNotice />
-      {/* Espaço inferior no mobile para o conteúdo não ficar atrás da barra de navegação; a de compra reserva o próprio espaço. */}
       <main id="conteudo" tabIndex={-1} className={cn('flex-1 outline-none md:pb-0', !buyBarActive && 'pb-[140px]')}>
         <Outlet />
       </main>

@@ -6,7 +6,6 @@ interface Article {
   image: string
 }
 
-// Conteúdo editorial do Figma. As páginas editoriais estão fora do escopo (§3), então "Ler mais" fica indisponível.
 const ARTICLES: Article[] = [
   {
     date: '12 de setembro',

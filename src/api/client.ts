@@ -9,7 +9,6 @@ export const apiClient = axios.create({
   timeout: 15_000,
   // Timeout com código próprio (ETIMEDOUT), separado de requisição abortada (ECONNABORTED).
   transitional: { clarifyTimeoutError: true },
-  // Listas viram parâmetros repetidos: ?category=a&category=b
   paramsSerializer: { indexes: null },
 })
 
@@ -26,7 +25,6 @@ apiClient.interceptors.response.use(
     // Cancelamentos seguem como estão para o TanStack Query reconhecer a consulta descartada.
     if (isCancel(error)) return Promise.reject(error)
     const apiError = toApiError(error)
-    // Sessão recusada numa chamada que levava token: a interface encerra a sessão e avisa.
     const sentToken = isAxiosError(error) && Boolean(error.config?.headers.has('Authorization'))
     if (sentToken && apiError.isUnauthenticated) {
       reportInvalidSession(apiError.code === 'SESSION_EXPIRED' ? 'expired' : 'invalid')

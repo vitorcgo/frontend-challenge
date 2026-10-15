@@ -3,13 +3,11 @@ import { Icon } from '@/components/icon'
 import { cn } from '@/lib/utils'
 
 interface AuthFieldProps extends Omit<ComponentProps<'input'>, 'id'> {
-  /** O Figma só mostra o placeholder; o rótulo existe para leitores de tela (§8). */
   label: string
   error?: string
   ref?: Ref<HTMLInputElement>
 }
 
-// Mobile (Figma): campos de 50 px com cantos de 10 px; no modal do desktop, 40 px e 5 px.
 const inputClass =
   'h-[50px] w-full min-w-0 rounded-[10px] border md:h-10 md:rounded-[5px] border-line bg-transparent px-4 text-sm leading-4 text-cream outline-none transition-colors placeholder:text-muted-text focus:border-brand aria-invalid:border-coral'
 

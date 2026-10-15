@@ -4,12 +4,10 @@ import { useCallback } from 'react'
 import { nftListQueryOptions } from './queries'
 import { toListQuery, validateCatalogSearch, type CatalogSearch } from './search'
 
-/** Busca do catálogo na URL. Fora da Início (atrás do modal de login), cai nos valores padrão. */
 export function useCatalogSearch(): CatalogSearch {
   return validateCatalogSearch(useSearch({ strict: false }))
 }
 
-/** Qualquer mudança de busca, filtro, aba ou ordenação volta para a página 1 (§3). */
 export function useUpdateCatalogSearch() {
   const navigate = useNavigate()
   return useCallback(
@@ -24,7 +22,6 @@ export function useUpdateCatalogSearch() {
   )
 }
 
-/** Mesma consulta da grade: filtros e grade compartilham o cache, sem requisição extra. */
 export function useCatalogQuery(search: CatalogSearch) {
   return useQuery(nftListQueryOptions(toListQuery(search)))
 }

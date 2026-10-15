@@ -10,7 +10,6 @@ interface EditionPickerProps {
   className?: string
 }
 
-/** Edições como no Figma (elipses com borda); esgotada fica riscada e desativada, não só com outra cor. */
 export function EditionPicker({ editions, selected, onSelect, className }: EditionPickerProps) {
   const headingId = useId()
   const selectedEdition = editions.find((edition) => edition.id === selected)

@@ -124,7 +124,6 @@ export function read<T>(selector: (db: Readonly<MockDatabase>) => T): T {
   return selector(current())
 }
 
-/** Toda escrita passa por aqui para o estado ser salvo e sobreviver ao refresh. */
 export function write<T>(mutation: (db: MockDatabase) => T): T {
   const result = mutation(current())
   persist()

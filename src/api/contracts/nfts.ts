@@ -31,16 +31,13 @@ export const MAX_QUANTITY_PER_ORDER = 10
 
 export interface NftImage {
   alt: string
-  /** 480 px de largura, para cards. */
   small: string
-  /** 960 px de largura, para o detalhe e telas de alta densidade. */
   large: string
 }
 
 export interface NftEdition {
   id: EditionId
   label: string
-  /** null para edição aberta. */
   supply: number | null
   available: number
 }
@@ -53,7 +50,6 @@ export interface NftSummary {
   category: NftCategory
   network: Network
   price: EthAmount
-  /** Preço anterior, exibido riscado quando houve redução. */
   previousPrice: EthAmount | null
   rare: boolean
   available: boolean
@@ -62,7 +58,6 @@ export interface NftSummary {
 }
 
 export interface Nft extends NftSummary {
-  /** Imagens da galeria do detalhe; a primeira é a mesma de `image`. */
   gallery: NftImage[]
   description: string
   story: string[]
@@ -75,7 +70,6 @@ export interface Nft extends NftSummary {
   maxPerOrder: number
 }
 
-/** Parâmetros de GET /api/nfts. Listas viram parâmetros repetidos na URL (?category=a&category=b). */
 export interface NftListQuery {
   search?: string
   category?: NftCategory | NftCategory[]
@@ -88,7 +82,6 @@ export interface NftListQuery {
   page?: number
   pageSize?: number
 }
-/** NFT escolhido pela curadoria para o bloco "NFT em destaque" da Início. */
 export interface FeaturedNftResponse {
   nft: NftSummary
   headline: string

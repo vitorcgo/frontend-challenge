@@ -9,7 +9,6 @@ import { SEARCH_MAX_LENGTH } from '@/features/catalog/search'
 interface HeaderSearchDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Botão que abriu o diálogo: recebe o foco de volta ao fechar sem buscar. */
   returnFocusTo: RefObject<HTMLElement | null>
 }
 
@@ -33,7 +32,6 @@ export default function HeaderSearchDialog({ open, onOpenChange, returnFocusTo }
           // Sem o DialogTrigger do Radix (o diálogo é carregado sob demanda), o foco é devolvido aqui.
           event.preventDefault()
           if (submitted.current) {
-            // Depois de uma busca o foco vai para os resultados, não de volta à lupa no topo da página.
             submitted.current = false
             focusCatalogResults()
           } else {

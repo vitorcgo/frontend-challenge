@@ -34,7 +34,6 @@ import wallet from '@/assets/icons/wallet.svg'
 import zoom from '@/assets/icons/zoom.svg'
 import { cn } from '@/lib/utils'
 
-/** [arquivo, largura, altura] com o tamanho original de cada ícone no Figma. */
 const ICONS = {
   activity: [activity, 18, 18],
   'arrow-down-2': [arrowDown2, 16, 16],
@@ -76,12 +75,10 @@ export type IconName = keyof typeof ICONS
 
 interface IconProps {
   name: IconName
-  /** Texto para leitores de tela. Sem ele, o ícone é decorativo. */
   label?: string
   className?: string
 }
 
-/** Ícone desenhado como máscara: a cor vem do `color` do elemento, como no texto. */
 export function Icon({ name, label, className }: IconProps) {
   const [src, width, height] = ICONS[name]
   return (

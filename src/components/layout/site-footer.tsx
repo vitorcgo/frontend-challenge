@@ -24,7 +24,6 @@ const TEXT_COLUMNS = [
   },
 ]
 
-// As coleções do rodapé abrem o catálogo já filtrado pela categoria.
 const FOOTER_CATEGORIES: NftCategory[] = ['arte-digital', 'fotografia', 'musica', 'arte-3d', 'utilidade']
 
 const SOCIALS = [
@@ -40,7 +39,6 @@ function NewsletterForm() {
   const statusId = useId()
   const [submitted, setSubmitted] = useState(false)
 
-  // Newsletter não faz parte do desafio: o envio avisa que não está disponível em vez de simular sucesso.
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     setSubmitted(true)

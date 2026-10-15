@@ -20,7 +20,6 @@ function FormAlert({ message }: { message?: string }) {
 
 interface FormProps {
   onSuccess: (name: string) => void
-  /** Conteúdo entre os campos e o botão (ex.: "Esqueceu a senha?"). */
   beforeSubmit?: ReactNode
   className?: string
 }
@@ -116,7 +115,6 @@ export function RegisterForm({ onSuccess, submitLabel, className }: FormProps & 
     setFormError(undefined)
     const parsed = registerRequestSchema.safeParse(values)
     const next: FormErrors<RegisterField> = parsed.success ? {} : fromZod<RegisterField>(parsed.error)
-    // A confirmação só existe na tela; a API recebe uma senha.
     if (!values.confirmPassword) next.confirmPassword = 'Confirme a senha.'
     else if (values.confirmPassword !== values.password) next.confirmPassword = 'As senhas não conferem.'
     if (!parsed.success || next.confirmPassword) {

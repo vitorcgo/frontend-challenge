@@ -1,7 +1,5 @@
 import { expect, FIRST_PAGE, test } from './support/catalog'
 
-// §9, item 1: busca, filtros combinados, ordenação, paginação e restauração pelo histórico.
-
 test.describe('catálogo da Início', () => {
   test.beforeEach(async ({ catalog }) => {
     await catalog.goto()
@@ -65,7 +63,6 @@ test.describe('catálogo da Início', () => {
     await filters.getByRole('button', { name: /^Ethereum/ }).click()
     await expect(catalog.cards).toHaveCount(3)
     await expect(filters.getByRole('button', { name: /^Música/ })).toHaveAttribute('aria-pressed', 'true')
-    // A contagem de cada rede já considera a categoria escolhida.
     await expect(filters.getByRole('button', { name: /^Polygon/ })).toContainText('(1)')
     await catalog.closeFilters()
 

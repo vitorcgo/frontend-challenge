@@ -9,7 +9,6 @@ const csvList = <T extends readonly [string, ...string[]]>(values: T) =>
 
 const ethParam = z.string().regex(/^\d+(\.\d{1,18})?$/, 'Valor em ETH inválido.')
 
-/** Validação de `GET /api/nfts` no servidor simulado. */
 export const nftListQuerySchema = z
   .object({
     search: z.string().trim().max(80).optional(),

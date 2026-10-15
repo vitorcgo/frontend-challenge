@@ -40,7 +40,6 @@ export function multiplyEth(value: EthAmount, quantity: number): EthAmount {
   return fromWei(toWei(value) * BigInt(quantity))
 }
 
-/** Percentual inteiro (ex.: 10 para 10%), arredondado para baixo em wei. */
 export function percentOfEth(value: EthAmount, percent: number): EthAmount {
   if (!Number.isInteger(percent) || percent < 0 || percent > 100) throw new Error(`Invalid percent: ${percent}`)
   return fromWei((toWei(value) * BigInt(percent)) / 100n)

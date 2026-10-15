@@ -12,7 +12,6 @@ export default defineConfig({
   expect: {
     // A primeira carga de cada teste inicia os mocks do zero; com vários testes em paralelo, 5 s ficava no limite.
     timeout: 10_000,
-    // Baselines estáveis: sem animações nem cursor piscando nas capturas.
     toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 },
   },
   use: {
@@ -30,7 +29,6 @@ export default defineConfig({
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
   ],
-  // Roda contra o build de produção, o mesmo que vai para a Vercel.
   webServer: {
     command: `pnpm build && pnpm preview --port ${port} --strictPort`,
     url: baseURL,

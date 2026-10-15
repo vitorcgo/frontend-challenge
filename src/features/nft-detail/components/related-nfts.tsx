@@ -5,14 +5,12 @@ import { nftListQueryOptions } from '@/features/catalog/queries'
 
 const RELATED_COUNT = 5
 
-/** "Mais desta coleção": outros NFTs da mesma coleção, vindos da mesma listagem do catálogo. */
 export function RelatedNfts({ nft }: { nft: Nft }) {
   const { data, isPending, isError } = useQuery(
     nftListQueryOptions({ collection: nft.collection.id, pageSize: RELATED_COUNT + 1 }),
   )
   const items = data?.items.filter((item) => item.id !== nft.id).slice(0, RELATED_COUNT)
 
-  // Bloco complementar: sem itens ou com falha, ele some em vez de competir com o conteúdo principal.
   if (isError || items?.length === 0) return null
 
   return (

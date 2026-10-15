@@ -5,7 +5,6 @@ import { HomePromos } from './home-promos'
 import { MintJournal } from './mint-journal'
 import { MobileCatalogSearch } from './mobile-catalog-search'
 
-/** Conteúdo da Início. Também aparece atrás do modal de login e cadastro no desktop, como no Figma. */
 export function HomePage({ search }: { search: CatalogSearch }) {
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-10 px-6 pt-6 md:gap-24 md:pt-8 xl:px-0">

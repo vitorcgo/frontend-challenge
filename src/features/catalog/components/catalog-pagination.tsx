@@ -3,14 +3,12 @@ import { Icon } from '@/components/icon'
 import { cn } from '@/lib/utils'
 import { EXACT_LOCATION } from '@/lib/link-options'
 
-/** Páginas visíveis: sempre a primeira, a última e as vizinhas da atual. */
 function pageItems(current: number, total: number): Array<number | 'gap'> {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
   const pages = new Set([1, total, current - 1, current, current + 1].filter((p) => p >= 1 && p <= total))
   const sorted = [...pages].sort((a, b) => a - b)
   return sorted.flatMap((page, index) => {
     const skipped = index > 0 ? page - sorted[index - 1]! - 1 : 0
-    // Reticências escondendo uma única página ocupariam o mesmo espaço que o próprio número.
     if (skipped === 1) return [page - 1, page]
     return skipped > 1 ? ['gap' as const, page] : [page]
   })

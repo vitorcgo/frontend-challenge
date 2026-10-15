@@ -39,7 +39,6 @@ export function resetNetworkState(): void {
   failedOnce.clear()
 }
 
-/** Aplica latência e falhas do cenário ativo. Retorna uma resposta quando a chamada não deve chegar ao handler. */
 export async function simulateNetwork(request: Request): Promise<Response | undefined> {
   await delay(latencyFor(request))
 

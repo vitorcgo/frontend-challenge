@@ -1,5 +1,4 @@
 export interface AuthSearch {
-  /** Para onde voltar depois de entrar (§3: "retorno ao fluxo anterior"). */
   redirect?: string
 }
 

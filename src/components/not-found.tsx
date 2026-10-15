@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { EXACT_PATH } from '@/lib/link-options'
 
-/** Estado não desenhado no Figma: segue o padrão visual das telas (fundo escuro, título em creme, botão laranja). */
 export function NotFound() {
   return (
     <section className="mx-auto flex max-w-[480px] flex-col items-center gap-6 px-6 py-24 text-center">

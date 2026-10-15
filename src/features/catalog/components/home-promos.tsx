@@ -9,7 +9,6 @@ interface Promo {
   title: [string, string]
   text: string
   image: string
-  /** O "Explorar" leva ao catálogo já filtrado pelo assunto da promoção. */
   search: Partial<CatalogSearch>
 }
 

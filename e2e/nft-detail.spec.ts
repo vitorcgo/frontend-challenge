@@ -1,8 +1,5 @@
 import { expect, test } from './support/catalog'
 
-// §9, item 2: acesso direto ao detalhe e tratamento de recurso inexistente.
-// Também cobre edição indisponível e limite de quantidade (§3, "Catálogo e detalhe").
-
 const EMERALD = '/nft/emerald-ape-042'
 
 test('acesso direto mostra o NFT com título da aba próprio', async ({ page, catalog }) => {
@@ -38,7 +35,6 @@ test('NFT inexistente mostra mensagem própria e caminho de volta ao catálogo',
 test('edição esgotada fica indisponível e a escolha troca a edição marcada', async ({ page, catalog }) => {
   await catalog.goto(EMERALD)
   const editions = page.getByRole('group', { name: 'Edição:' })
-  // No Emerald Ape, 1/1 e 1/10 estão esgotadas: a primeira disponível (1/50) vem marcada, como no Figma.
   await expect(editions.getByRole('button', { name: '1/1 (esgotada)' })).toBeDisabled()
   await expect(editions.getByRole('button', { name: '1/10 (esgotada)' })).toBeDisabled()
   await expect(editions.getByRole('button', { name: '1/50' })).toHaveAttribute('aria-pressed', 'true')
@@ -49,7 +45,6 @@ test('edição esgotada fica indisponível e a escolha troca a edição marcada'
 })
 
 test('quantidade respeita o que resta na edição', async ({ page, catalog }) => {
-  // Sage Nomad: a 1/1 tem 1 unidade e a 1/10 tem 3.
   await catalog.goto('/nft/sage-nomad-009')
   const editions = page.getByRole('group', { name: 'Edição:' })
   const plus = page.getByRole('button', { name: 'Aumentar quantidade' })
@@ -70,7 +65,6 @@ test('quantidade respeita o que resta na edição', async ({ page, catalog }) =>
   await expect(plus).toBeDisabled()
   await expect(page.getByText('Limite de 3 unidades nesta compra.')).toBeVisible()
 
-  // Voltar para uma edição com menos unidades reduz a quantidade ao novo limite.
   await editions.getByRole('button', { name: '1/1', exact: true }).click()
   await expect(value).toHaveText('1')
 })
@@ -126,7 +120,6 @@ test('compra e favoritos não aparentam funcionar antes de existirem', async ({ 
 })
 
 test('sem rolagem horizontal, inclusive com preço anterior e textos longos', async ({ page, catalog }) => {
-  // Neon Vessel tem preço anterior (texto só para leitor de tela) e aparece em "Mais desta coleção" de outros NFTs.
   for (const id of ['emerald-ape-042', 'sage-nomad-009', 'neon-vessel-552']) {
     await catalog.goto(`/nft/${id}`)
     await expect(page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('listitem').first()).toBeVisible()
@@ -135,7 +128,6 @@ test('sem rolagem horizontal, inclusive com preço anterior e textos longos', as
 })
 
 test('banco simulado salvo por uma versão anterior é descartado', async ({ page, catalog }) => {
-  // Navegador que já usou o app antes: dados velhos no localStorage, com imagens que não existem mais.
   await page.addInitScript(() => {
     if (sessionStorage.getItem('seeded')) return
     sessionStorage.setItem('seeded', '1')
@@ -190,7 +182,6 @@ test.describe('mobile', () => {
     await catalog.goto(EMERALD)
     await expect(page.getByRole('navigation', { name: 'Principal' })).toHaveCount(0)
     await page.getByRole('button', { name: 'Aumentar quantidade' }).click()
-    // 2 x 1.19 ETH, calculado em wei, sem erro de ponto flutuante.
     await expect(page.getByText('2.38 ETH')).toBeVisible()
   })
 

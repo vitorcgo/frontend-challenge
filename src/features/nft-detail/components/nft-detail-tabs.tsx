@@ -18,7 +18,6 @@ function Field({ label, children }: { label: string; children: string }) {
 const triggerClass =
   'h-auto flex-none rounded-none border-0 p-0 pb-3 max-w-full text-left whitespace-normal! text-md leading-4 font-normal text-cream after:bottom-0 after:h-[3px] after:bg-brand hover:text-accent-text data-[state=active]:font-bold data-[state=active]:text-accent-text'
 
-/** Figma "Description": abas Detalhes e Avaliações sobre uma linha fina. */
 export function NftDetailTabs({ nft }: { nft: Nft }) {
   const network = NETWORK_LABELS[nft.network]
   return (

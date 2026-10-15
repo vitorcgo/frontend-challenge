@@ -14,7 +14,6 @@ function useSessionToken() {
   return useSyncExternalStore(subscribeSessionToken, getSessionToken)
 }
 
-/** Dados públicos (catálogo) ficam; tudo que pertence ao usuário sai do cache no logout ou na troca de conta (§3). */
 export function clearPrivateData(queryClient: QueryClient) {
   queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== 'nfts' })
 }
@@ -26,12 +25,13 @@ export function useSession() {
     queryFn: ({ signal }) => getSession(signal),
     enabled: token !== null,
     staleTime: Infinity,
+    refetchOnReconnect: 'always',
+    refetchOnWindowFocus: (query) => query.state.status === 'error',
   })
   const user = token ? query.data?.user : undefined
   return {
     user,
     expiresAt: token ? query.data?.expiresAt : undefined,
-    // Com token salvo e a sessão ainda sendo conferida, a tela não mostra "Entrar" por engano.
     isLoading: token !== null && query.isPending,
   }
 }
@@ -71,7 +71,6 @@ export function useLogout() {
   })
 }
 
-/* Aviso de sessão expirada, mostrado no topo da página até a pessoa entrar de novo ou fechar. */
 let expiredNotice = false
 const noticeListeners = new Set<() => void>()
 const setExpiredNotice = (value: boolean) => {
@@ -100,7 +99,6 @@ function endSession(queryClient: QueryClient, reason: 'expired' | 'invalid') {
   }
 }
 
-/** Encerra a sessão quando ela expira (pelo relógio ou por resposta da API) e limpa os dados privados. */
 export function useSessionLifecycle() {
   const queryClient = useQueryClient()
   const { expiresAt } = useSession()
@@ -113,7 +111,6 @@ export function useSessionLifecycle() {
     return () => clearTimeout(timer)
   }, [expiresAt, queryClient])
 
-  // Entrou de novo: o aviso de expiração não faz mais sentido.
   useEffect(() => {
     if (expiresAt) setExpiredNotice(false)
   }, [expiresAt])

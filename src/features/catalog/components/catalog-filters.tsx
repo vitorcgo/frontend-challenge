@@ -80,7 +80,6 @@ function PriceFilter({ search, range }: { search: CatalogSearch; range: Facets['
 
   const apply = () => {
     const [low, high] = value
-    // A ponta que ficou no limite do catálogo não vira filtro na URL.
     update({ priceMin: low > min ? low.toFixed(2) : undefined, priceMax: high < max ? high.toFixed(2) : undefined })
   }
 
@@ -114,7 +113,6 @@ function PriceFilter({ search, range }: { search: CatalogSearch; range: Facets['
 interface CatalogFiltersProps {
   search: CatalogSearch
   facets: Facets | undefined
-  /** Na gaveta do mobile entra também a ordenação, que no desktop fica ao lado das abas. */
   showSort?: boolean
   className?: string
 }

@@ -9,7 +9,6 @@ const HERO_IMAGE = { small: '/images/nfts/monkey-varsity-480.webp', large: '/ima
 const HERO_THUMB = '/images/nfts/gorilla-bucket-hat-480.webp'
 const HERO_ALT = 'Ilustração de um macaco de óculos redondos e jaqueta college verde'
 
-/** Indicador do carrossel do Figma (três pontos iguais): decorativo, o banner tem um único slide. */
 function Dots({ className }: { className?: string }) {
   return (
     <span aria-hidden className={className}>

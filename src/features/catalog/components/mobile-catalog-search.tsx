@@ -7,7 +7,6 @@ import { CatalogFiltersSheet } from './catalog-filters-sheet'
 
 const DEBOUNCE_MS = 350
 
-/** Barra do topo do mobile (Figma "Search Bar"): busca enquanto digita e abre a gaveta de filtros. */
 export function MobileCatalogSearch() {
   const search = useCatalogSearch()
   const update = useUpdateCatalogSearch()
@@ -35,7 +34,6 @@ export function MobileCatalogSearch() {
         role="search"
         onSubmit={(event) => {
           event.preventDefault()
-          // Enter é a intenção de ver os resultados; enquanto só digita, a página não rola.
           void update({ search: text.trim() || undefined }).then(focusCatalogResults)
         }}
         className="flex min-w-0 flex-1 items-center gap-2 rounded-[10px] bg-surface-card px-3 text-muted-text focus-within:outline-2 focus-within:outline-accent-text"

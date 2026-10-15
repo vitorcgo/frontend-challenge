@@ -22,7 +22,6 @@ import { RatingStars } from './rating-stars'
 import { RelatedNfts } from './related-nfts'
 import { ShareLinks } from './share-links'
 
-// Carrinho e favoritos entram nas próximas fatias; até lá os botões aparecem, mas não fingem funcionar.
 const SOON = 'Disponível em breve'
 
 function Breadcrumb() {
@@ -216,7 +215,6 @@ function MobileDetail({ nft, edition, onSelectEdition, quantity, max, onQuantity
   )
 }
 
-/** Figma "Buy Bar": fica fixa no lugar da barra de navegação, que some enquanto esta barra está na tela. */
 function MobileBuyBar({ nft, quantity, max, onQuantityChange }: Pick<ViewProps, 'nft' | 'quantity' | 'max' | 'onQuantityChange'>) {
   useRegisterMobileBuyBar()
   const barRef = useRef<HTMLDivElement>(null)
@@ -325,11 +323,9 @@ export function NftDetailPage({ id }: { id: string }) {
     )
   }
 
-  // A galeria nunca fica vazia: sem imagens extras, mostra a imagem principal.
   const gallery = nft.gallery.length ? nft.gallery : [nft.image]
   const edition = pickEdition(nft, requestedEdition)
   const max = maxQuantity(nft, edition)
-  // Trocar para uma edição com menos unidades reduz a quantidade ao novo limite.
   const quantity = max === 0 ? 0 : Math.min(Math.max(requestedQuantity, 1), max)
 
   const props: ViewProps = {

@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils'
 import { HeaderSearch } from './header-search'
 import { isMarketPath, paths } from './routes'
 
-/** `active` é o destaque visual do Figma; `current` marca a página atual para leitores de tela. */
 type NavItem = { label: string } & ({ to: '/'; hash?: string; active: boolean; current: boolean } | { to?: undefined })
 
 function NavLink({ item }: { item: NavItem }) {
@@ -16,7 +15,6 @@ function NavLink({ item }: { item: NavItem }) {
     <span aria-hidden className={cn('h-[3px] w-full', active ? 'bg-brand' : 'bg-transparent')} />
   )
 
-  // Páginas fora do escopo do desafio: visíveis como no Figma, mas sem fingir que funcionam.
   if (!item.to) {
     return (
       <li className="flex flex-col gap-6">
@@ -48,14 +46,12 @@ function NavLink({ item }: { item: NavItem }) {
   )
 }
 
-/** "Entrar" leva ao login e volta para esta tela; logado, o mesmo botão vira "Sair" (o ícone do Figma já é o de saída). */
 function AccountActions() {
   const { user, isLoading } = useSession()
   const logout = useLogout()
   const href = useRouterState({ select: (state) => state.location.href })
   const buttonClass = 'h-[35px] w-[100px] gap-1 rounded-lg text-base'
 
-  // Conferindo a sessão salva: reserva o espaço do botão sem mostrar "Entrar" por engano.
   if (isLoading) return <span aria-hidden className="h-[35px] w-[100px]" />
 
   if (user) {
@@ -88,7 +84,6 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
   const market = isMarketPath(pathname)
 
   const items: NavItem[] = [
-    // No Figma, "Início" fica destacado também em Entrar, Criar conta, Perfil e Carteiras.
     { label: 'Início', to: '/', active: !market, current: pathname === paths.home },
     { label: 'Mercado', to: '/', hash: 'mercado', active: market, current: false },
     { label: 'Criadores' },

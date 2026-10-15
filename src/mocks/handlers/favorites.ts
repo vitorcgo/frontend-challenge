@@ -22,7 +22,6 @@ export const favoriteHandlers = [
     }),
   ),
 
-  // PUT e DELETE são idempotentes: repetir a chamada não muda o resultado.
   http.put(
     `${API}/favorites/:nftId`,
     route(({ request, params }) => {

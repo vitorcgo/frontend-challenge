@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-/** Fica true só se `active` continuar true por `delayMs`. Usado para avisar lentidão sem piscar em respostas rápidas. */
 export function useDelayedFlag(active: boolean, delayMs: number): boolean {
   const [elapsed, setElapsed] = useState(false)
 

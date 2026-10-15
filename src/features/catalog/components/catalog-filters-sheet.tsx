@@ -12,10 +12,6 @@ interface TriggerProps {
   'aria-expanded'?: boolean
 }
 
-/**
- * Filtros em gaveta para telas abaixo de 1280 px; o foco fica preso na gaveta enquanto ela está aberta
- * e volta ao botão ao fechar. A gaveta (Sheet, Select e Slider) só é baixada no primeiro uso.
- */
 export function CatalogFiltersSheet({ trigger }: { trigger: ReactElement<TriggerProps> }) {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)

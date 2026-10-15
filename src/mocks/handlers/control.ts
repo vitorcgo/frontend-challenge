@@ -7,10 +7,6 @@ import { toNft } from '../mappers'
 import { resetNetworkState } from '../network'
 import { getScenario, isScenarioId, SCENARIOS, setScenario, type ScenarioId } from '../scenarios'
 
-/**
- * Rotas usadas pelos testes e pela demonstração para controlar o servidor simulado.
- * Toda mudança passa pelo mesmo banco das rotas públicas, nunca direto pela interface.
- */
 const CONTROL = `${API}/__mock`
 
 const scenarioSchema = z.object({

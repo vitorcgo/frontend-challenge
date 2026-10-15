@@ -8,7 +8,6 @@ import { CatalogFilters } from './catalog-filters'
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** Botão que abriu a gaveta: recebe o foco de volta ao fechar. */
   returnFocusTo: RefObject<HTMLElement | null>
 }
 

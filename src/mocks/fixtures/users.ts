@@ -1,6 +1,5 @@
 import type { Wallet } from '@/api/contracts'
 
-/** Credenciais fictícias documentadas no README. */
 export const DEMO_PASSWORD = 'Kurio2026!'
 
 export interface UserFixture {

@@ -31,5 +31,4 @@ export interface Paginated<T> {
   totalPages: number
 }
 
-/** Data e hora em ISO 8601 (UTC). */
 export type IsoDateTime = string

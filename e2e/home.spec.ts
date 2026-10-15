@@ -1,7 +1,5 @@
 import { expect, test } from './support/catalog'
 
-// Demais blocos da Início: destaque vindo da API, promoções, Diário e página inexistente (§3 e §4).
-
 test.describe('desktop', () => {
   test.skip(({ isMobile }) => isMobile, 'o NFT em destaque fica na barra lateral, a partir de 1280 px')
 

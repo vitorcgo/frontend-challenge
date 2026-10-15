@@ -5,7 +5,6 @@ import { formatEth } from '@/lib/format'
 
 interface NftCardProps {
   nft: NftSummary
-  /** Primeira linha da grade carrega a imagem sem esperar a rolagem. */
   priority?: boolean
 }
 

@@ -1,9 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './support/catalog'
 
-// §9, item 3: cadastro, login, expiração de sessão, logout e troca de usuário.
-// Também cobre validação de formulário e retorno ao fluxo anterior (§3, item 11 do §9).
-
 const PASSWORD = 'Kurio2026!'
 
 async function fillLogin(page: Page, email: string, password = PASSWORD) {
@@ -15,15 +12,20 @@ async function fillLogin(page: Page, email: string, password = PASSWORD) {
 const EXPIRED = 'Sua sessão expirou. Entre novamente para continuar.'
 const expiredNotice = (page: Page) => page.getByRole('paragraph').filter({ hasText: EXPIRED })
 
-/**
- * No desktop o nome aparece no cabeçalho. No mobile, o "Perfil" da barra deixa de levar ao login
- * (no detalhe do NFT a barra dá lugar à de compra, então vale o token salvo).
- */
 async function expectLoggedIn(page: Page, name: string, isMobile: boolean) {
   if (isMobile) {
-    await expect.poll(() => page.evaluate(() => localStorage.getItem('kurio.session.token'))).not.toBeNull()
-    const tabBar = page.getByRole('navigation', { name: 'Principal' })
-    if (await tabBar.count()) await expect(tabBar.getByRole('link', { name: 'Perfil' })).toHaveAttribute('href', '/perfil')
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const token = localStorage.getItem('kurio.session.token')
+          if (!token) return null
+          const response = await fetch('/api/auth/session', { headers: { Authorization: `Bearer ${token}` } })
+          // Logo após o refresh os mocks podem não ter iniciado e a resposta é o HTML da página.
+          if (!response.ok || !response.headers.get('content-type')?.includes('json')) return null
+          return ((await response.json()) as { user: { displayName: string } }).user.displayName
+        }),
+      )
+      .toBe(name)
   } else {
     await expect(page.getByRole('banner').getByText(name)).toBeVisible()
     await expect(page.getByRole('button', { name: 'Sair' })).toBeVisible()
@@ -53,7 +55,6 @@ test('validação do login acontece no campo, antes de chamar a API', async ({ p
   await expect(email).toBeFocused()
   await expect(page.getByText('Informe um e-mail válido.')).toBeVisible()
   await expect(page.getByText('Informe a senha.')).toBeVisible()
-  // A mensagem fica associada ao campo para o leitor de tela.
   const describedBy = await email.getAttribute('aria-describedby')
   await expect(page.locator(`[id="${describedBy}"]`)).toHaveText('Informe um e-mail válido.')
 })
@@ -87,7 +88,6 @@ test('cadastro valida campos, trata conflito e entra na conta nova', async ({ pa
   await expect(page.getByText('A senha precisa ter pelo menos 8 caracteres.')).toBeVisible()
   await expect(page.getByText('As senhas não conferem.')).toBeVisible()
 
-  // E-mail já cadastrado: o erro da API aparece no campo certo.
   await page.getByRole('textbox', { name: 'Nome de usuário' }).fill('nova.conta')
   await page.getByRole('textbox', { name: 'Digite seu e-mail' }).fill('ana@kurio.dev')
   await page.getByLabel('Senha', { exact: true }).fill('NovaSenha1')
@@ -110,7 +110,6 @@ test('sessão expirada no relógio encerra a sessão e oferece entrar de novo', 
   await fillLogin(page, 'ana@kurio.dev')
   await expectLoggedIn(page, 'Ana Lima', catalog.isMobile)
 
-  // Cenário short-session: a sessão vale 60 s.
   await page.clock.fastForward(61_000)
   await expect(expiredNotice(page)).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Principal' }).getByRole('link', { name: 'Perfil' }).or(page.getByRole('banner').getByRole('link', { name: 'Entrar' }))).toBeVisible()

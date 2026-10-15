@@ -36,7 +36,6 @@ export function setScenario(id: ScenarioId): void {
   }
 }
 
-/** `?scenario=slow` na URL tem prioridade e fica salvo para os próximos carregamentos. */
 export function initScenario(): void {
   const fromUrl = new URL(window.location.href).searchParams.get(URL_PARAM)
   if (isScenarioId(fromUrl)) {

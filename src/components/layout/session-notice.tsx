@@ -5,7 +5,6 @@ import { safeRedirect } from '@/features/auth/redirect'
 import { useExpiredNotice } from '@/features/auth/session'
 import { getAnnouncement, subscribeAnnouncements } from '@/lib/announce'
 
-/** Aviso visível de sessão expirada, com atalho para entrar de novo e voltar a esta tela (§3). */
 export function SessionExpiredNotice() {
   const { visible, dismiss } = useExpiredNotice()
   const href = useRouterState({ select: (state) => state.location.href })
@@ -32,7 +31,6 @@ export function SessionExpiredNotice() {
   )
 }
 
-/** Região única de anúncios para leitores de tela (ver `announce`). */
 export function Announcer() {
   const message = useSyncExternalStore(subscribeAnnouncements, getAnnouncement)
   return (

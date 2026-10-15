@@ -7,7 +7,6 @@ interface ZoomDialogProps {
   onOpenChange: (open: boolean) => void
   name: string
   image: NftImage
-  /** Botão que abriu o diálogo: recebe o foco de volta ao fechar. */
   returnFocusTo: RefObject<HTMLElement | null>
 }
 

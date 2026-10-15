@@ -46,7 +46,6 @@ const normalize = (text: string) =>
 
 type Filter = 'category' | 'network'
 
-/** Aplica todos os filtros, exceto os ignorados (usado para calcular as contagens de cada faceta). */
 function applyFilters(nfts: NftRecord[], query: ListQuery, ignore?: Filter): NftRecord[] {
   const search = query.search ? normalize(query.search) : ''
   return nfts.filter((nft) => {

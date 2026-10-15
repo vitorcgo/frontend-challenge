@@ -3,7 +3,6 @@ import type { ApiErrorBody, ApiErrorCode, FieldErrors } from './contracts'
 
 export type ClientErrorCode = ApiErrorCode | 'NETWORK_ERROR' | 'TIMEOUT' | 'UNKNOWN_ERROR'
 
-/** Erro único que as telas recebem, venha ele da API, da rede ou de um timeout. */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -16,7 +15,6 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 
-  /** Falhas que podem dar certo numa nova tentativa sem efeito colateral. */
   get isTransient(): boolean {
     return this.code === 'NETWORK_ERROR' || this.code === 'TIMEOUT' || this.status >= 500
   }

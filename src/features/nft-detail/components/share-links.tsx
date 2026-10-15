@@ -2,7 +2,6 @@ import shareLinkedin from '@/assets/brands/share-linkedin.svg'
 import shareTwitter from '@/assets/brands/share-twitter.svg'
 import { Icon } from '@/components/icon'
 
-/** Compartilhamento por links públicos de cada rede (abrem em nova aba), sem SDK nem rastreamento. */
 export function ShareLinks({ name, path }: { name: string; path: string }) {
   const url = new URL(path, window.location.origin).toString()
   const text = `${name} na Kurio`

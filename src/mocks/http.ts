@@ -94,7 +94,6 @@ interface RouteInfo {
   params: Record<string, string | readonly string[] | undefined>
 }
 
-/** Envolve um handler REST: aplica o cenário de rede e converte falhas no envelope de erro da API. */
 export function route(resolver: (info: RouteInfo) => Response | Promise<Response>) {
   return async (info: RouteInfo): Promise<Response> => {
     const simulated = await simulateNetwork(info.request)
@@ -109,7 +108,6 @@ export function route(resolver: (info: RouteInfo) => Response | Promise<Response
   }
 }
 
-/** Rotas de controle dos testes: sem latência nem falhas simuladas. */
 export function controlRoute(resolver: (info: RouteInfo) => Response | Promise<Response>) {
   return async (info: RouteInfo): Promise<Response> => {
     try {
