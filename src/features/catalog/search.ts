@@ -9,7 +9,7 @@ import {
   type NftSort,
   type NftTab,
 } from '@/api/contracts'
-import { isEthAmount } from '@/lib/eth'
+import { compareEth, isEthAmount } from '@/lib/eth'
 
 /** Mesmo limite do contrato da API; os campos de busca usam este valor em `maxLength`. */
 export const SEARCH_MAX_LENGTH = 80
@@ -40,7 +40,14 @@ function list<T extends string>(options: readonly T[], value: unknown): T[] | un
   return valid.length ? valid : undefined
 }
 
-const eth = (value: unknown) => (typeof value === 'string' && isEthAmount(value) ? value : undefined)
+// O roteador lê a URL como JSON: "?priceMax=1" digitado à mão chega como número, não como texto.
+const text = (value: unknown) =>
+  typeof value === 'string' ? value : typeof value === 'number' || typeof value === 'boolean' ? String(value) : undefined
+
+const eth = (value: unknown) => {
+  const amount = text(value)
+  return amount !== undefined && isEthAmount(amount) ? amount : undefined
+}
 
 /**
  * Estado do catálogo na URL (§3: sobrevive a refresh e ao histórico).
@@ -49,14 +56,18 @@ const eth = (value: unknown) => (typeof value === 'string' && isEthAmount(value)
  */
 export function validateCatalogSearch(input: CatalogSearchInput): CatalogSearch {
   const raw = input as Record<string, unknown>
-  const search = typeof raw.search === 'string' ? raw.search.trim().slice(0, SEARCH_MAX_LENGTH) : ''
+  const search = (text(raw.search) ?? '').trim().slice(0, SEARCH_MAX_LENGTH)
   const page = Number(raw.page)
+  let priceMin = eth(raw.priceMin)
+  let priceMax = eth(raw.priceMax)
+  // Faixa invertida na URL é corrigida aqui, em vez de virar erro de validação na API.
+  if (priceMin && priceMax && compareEth(priceMin, priceMax) > 0) [priceMin, priceMax] = [priceMax, priceMin]
   return {
     search: search || undefined,
     category: list(NFT_CATEGORIES, raw.category),
     network: list(NETWORKS, raw.network),
-    priceMin: eth(raw.priceMin),
-    priceMax: eth(raw.priceMax),
+    priceMin,
+    priceMax,
     tab: oneOf(NFT_TABS, raw.tab) ? raw.tab : CATALOG_DEFAULTS.tab,
     sort: oneOf(NFT_SORTS, raw.sort) ? raw.sort : CATALOG_DEFAULTS.sort,
     page: Number.isInteger(page) && page >= 1 ? page : CATALOG_DEFAULTS.page,

@@ -56,9 +56,9 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
   const hasToolbarSort = useMediaQuery('(min-width: 768px)')
   const panelHeadingId = useId()
 
-
   const filtered = hasActiveFilters(search) || search.tab !== 'all'
-  const pageOutOfRange = data !== undefined && data.total > 0 && search.page > data.totalPages
+  // Com dados de outra busca ainda na tela (placeholder), o total de páginas não vale para a página pedida.
+  const pageOutOfRange = data !== undefined && !isPlaceholderData && data.total > 0 && search.page > data.totalPages
 
   let content: ReactNode
   if (isPending) {
