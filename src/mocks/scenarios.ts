@@ -10,6 +10,8 @@ export const SCENARIOS = {
   flaky: 'A primeira chamada de cada rota responde 503; a nova tentativa funciona.',
   'short-session': 'A sessão expira 60 s depois do login.',
   'wallet-rejected': 'A carteira recusa toda tentativa de conexão.',
+  'payment-rejected': 'O pagamento de todo pedido é recusado pela rede.',
+  'order-timeout': 'O pedido é criado, mas a resposta só chega depois do limite do cliente (recuperação pela chave de idempotência).',
 } as const satisfies Record<string, string>
 
 export type ScenarioId = keyof typeof SCENARIOS

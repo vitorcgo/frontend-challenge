@@ -36,6 +36,7 @@ export function toCart(record: CartRecord, db: Readonly<MockDatabase>): Cart {
     items.push({
       id: item.id,
       nftId: nft.id,
+      nftVersion: nft.version,
       name: nft.name,
       tokenId: nft.tokenId,
       image: nft.image,

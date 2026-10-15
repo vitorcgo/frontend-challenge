@@ -23,5 +23,6 @@ export type NftUpdatedEvent = RealtimeEvent<'nft.updated', 'nft', NftUpdatedData
 
 export const REALTIME_EVENTS = {
   nftUpdated: 'nft.updated',
+  orderUpdated: 'order.updated',
   sessionJoin: 'session.join',
 } as const

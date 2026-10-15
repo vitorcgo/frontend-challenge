@@ -7,6 +7,8 @@ export type CartItemIssue = 'sold-out' | 'insufficient'
 export interface CartItem {
   id: string
   nftId: string
+  /** Versão do NFT usada no cálculo; eventos com versão menor ou igual são antigos. */
+  nftVersion: number
   name: string
   tokenId: string
   image: NftImage

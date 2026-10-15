@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const port = 4173
+// Porta própria e sem reaproveitar servidor aberto: na 4173 (padrão do Vite) pode estar outro projeto.
+const port = 4317
 const baseURL = `http://localhost:${port}`
 
 export default defineConfig({
@@ -32,7 +33,7 @@ export default defineConfig({
   webServer: {
     command: `pnpm build && pnpm preview --port ${port} --strictPort`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 })

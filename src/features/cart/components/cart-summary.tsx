@@ -123,6 +123,12 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ cart, mobile, blocked }: CartSummaryProps) {
+  const ctaClass = cn(
+    'w-full font-bold text-ink',
+    mobile
+      ? 'h-[60px] rounded-[40px] bg-[linear-gradient(100deg,#d28a4c_4%,rgb(210_138_76/0.8)_122%)] text-base'
+      : 'h-10 rounded-[3px] bg-brand text-body',
+  )
   const { summary } = cart
   return (
     <section
@@ -153,19 +159,15 @@ export function CartSummary({ cart, mobile, blocked }: CartSummaryProps) {
       </dl>
 
       <div className="flex flex-col items-center gap-3">
-        <button
-          type="button"
-          disabled
-          title={blocked ? 'Ajuste os itens marcados para continuar' : 'Disponível em breve'}
-          className={cn(
-            'w-full font-bold text-ink disabled:opacity-60',
-            mobile
-              ? 'h-[60px] rounded-[40px] bg-[linear-gradient(100deg,#d28a4c_4%,rgb(210_138_76/0.8)_122%)] text-base'
-              : 'h-10 rounded-[3px] bg-brand text-body',
-          )}
-        >
-          Conectar e finalizar
-        </button>
+        {blocked ? (
+          <button type="button" disabled className={cn(ctaClass, 'opacity-60')}>
+            Conectar e finalizar
+          </button>
+        ) : (
+          <Link to="/pagamento" className={cn(ctaClass, 'grid place-items-center')}>
+            Conectar e finalizar
+          </Link>
+        )}
         {blocked && (
           <p role="status" className="text-center text-caption leading-4 text-coral">
             Ajuste os itens marcados para continuar.

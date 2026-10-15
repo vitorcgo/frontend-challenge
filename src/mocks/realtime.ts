@@ -1,10 +1,12 @@
 import { toSocketIo } from '@mswjs/socket.io-binding'
 import { ws } from 'msw'
-import { REALTIME_EVENTS, type NftUpdatedEvent } from '@/api/contracts'
+import { REALTIME_EVENTS, type NftUpdatedEvent, type OrderUpdatedEvent } from '@/api/contracts'
 import { env } from '@/config/env'
-import { read } from './db'
+import { read, type OrderRecord } from './db'
 import type { NftRecord } from './fixtures/nfts'
 import { newId, nowIso } from './http'
+
+type AnyEvent = NftUpdatedEvent | OrderUpdatedEvent
 
 type SocketIo = ReturnType<typeof toSocketIo>
 
@@ -15,7 +17,7 @@ interface Client {
 }
 
 const clients = new Set<Client>()
-const history: NftUpdatedEvent[] = []
+const history: AnyEvent[] = []
 
 // O binding faz o handshake, mas não manda o ping do Engine.IO; sem ele o cliente desconecta em ~30 s.
 const PING_INTERVAL_MS = 20_000
@@ -40,8 +42,29 @@ export const realtimeHandler = link.addEventListener('connection', (connection) 
   })
 })
 
-function broadcast(event: NftUpdatedEvent) {
-  for (const client of clients) client.io.client.emit(event.type, event)
+/** Eventos de pedido vão só para as conexões da pessoa dona do pedido. */
+const recipients = new Map<string, string>()
+
+function broadcast(event: AnyEvent) {
+  const owner = recipients.get(event.id)
+  for (const client of clients) {
+    if (!owner || client.userId === owner) client.io.client.emit(event.type, event)
+  }
+}
+
+export function publishOrderUpdated(order: OrderRecord) {
+  const event: OrderUpdatedEvent = {
+    id: newId('evt'),
+    type: 'order.updated',
+    resource: { type: 'order', id: order.id },
+    version: order.version,
+    occurredAt: nowIso(),
+    data: { status: order.status, transactionHash: order.transactionHash, rejectionReason: order.rejectionReason },
+  }
+  recipients.set(event.id, order.userId)
+  history.push(event)
+  broadcast(event)
+  return event
 }
 
 export function publishNftUpdated(nft: NftRecord) {
@@ -80,4 +103,5 @@ export const connectedClients = () => clients.size
 
 export function resetRealtime() {
   history.length = 0
+  recipients.clear()
 }

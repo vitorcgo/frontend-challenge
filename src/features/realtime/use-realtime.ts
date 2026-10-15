@@ -8,10 +8,13 @@ import {
   type Nft,
   type NftListResponse,
   type NftUpdatedEvent,
+  type Order,
+  type OrderUpdatedEvent,
 } from '@/api/contracts'
 import { getSessionToken, subscribeSessionToken } from '@/api/session-token'
 import { cartKeys } from '@/features/cart/keys'
 import { nftKeys } from '@/features/catalog/queries'
+import { orderKeys } from '@/features/checkout/queries'
 import { announce } from '@/lib/announce'
 import { apiReady } from '@/lib/api-ready'
 import { formatEth } from '@/lib/format'
@@ -25,6 +28,11 @@ function knownVersion(queryClient: QueryClient, id: string) {
   for (const [, list] of queryClient.getQueriesData<NftListResponse>({ queryKey: nftKeys.lists() })) {
     const nft = list?.items.find((item) => item.id === id)
     if (nft) versions.push(nft.version)
+  }
+  const featured = queryClient.getQueryData<FeaturedNftResponse>(nftKeys.featured())?.nft
+  if (featured?.id === id) versions.push(featured.version)
+  for (const [, cart] of queryClient.getQueriesData<Cart>({ queryKey: cartKeys.all })) {
+    for (const item of cart?.items ?? []) if (item.nftId === id) versions.push(item.nftVersion)
   }
   return Math.max(...versions)
 }
@@ -68,10 +76,27 @@ function applyNftUpdated(queryClient: QueryClient, event: NftUpdatedEvent) {
   }
 }
 
-/** Ao reconectar, eventos podem ter sido perdidos: catálogo e carrinho voltam a ser lidos da API. */
+function applyOrderUpdated(queryClient: QueryClient, event: OrderUpdatedEvent) {
+  if (seenEvents.has(event.id)) return
+  seenEvents.add(event.id)
+  const key = orderKeys.detail(event.resource.id)
+  const current = queryClient.getQueryData<Order>(key)
+  if (current && current.version >= event.version) return
+
+  if (current) queryClient.setQueryData<Order>(key, { ...current, ...event.data, version: event.version })
+  void queryClient.invalidateQueries({ queryKey: key })
+  if (event.data.status === 'confirmed') {
+    void queryClient.invalidateQueries({ queryKey: cartKeys.all })
+    void queryClient.invalidateQueries({ queryKey: nftKeys.all })
+  }
+  announce(event.data.status === 'confirmed' ? 'Pedido confirmado.' : event.data.status === 'rejected' ? 'Pagamento recusado.' : 'Pedido atualizado.')
+}
+
+/** Ao reconectar, eventos podem ter sido perdidos: catálogo, carrinho e pedidos voltam a ser lidos da API. */
 function reconcile(queryClient: QueryClient) {
   void queryClient.invalidateQueries({ queryKey: nftKeys.all })
   void queryClient.invalidateQueries({ queryKey: cartKeys.all })
+  void queryClient.invalidateQueries({ queryKey: orderKeys.all })
 }
 
 /** Um socket por sessão: trocar de usuário fecha o anterior e com ele as inscrições da sessão antiga. */
@@ -95,6 +120,7 @@ export function useRealtime() {
         connectedBefore = true
       })
       socket.on(REALTIME_EVENTS.nftUpdated, (event: NftUpdatedEvent) => applyNftUpdated(queryClient, event))
+      socket.on(REALTIME_EVENTS.orderUpdated, (event: OrderUpdatedEvent) => applyOrderUpdated(queryClient, event))
       socket.connect()
     })
 

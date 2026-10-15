@@ -2,6 +2,7 @@ import type { RequestHandler, WebSocketHandler } from 'msw'
 import { realtimeHandler } from '../realtime'
 import { authHandlers } from './auth'
 import { cartHandlers } from './cart'
+import { checkoutHandlers } from './checkout'
 import { controlHandlers } from './control'
 import { favoriteHandlers } from './favorites'
 import { nftHandlers } from './nfts'
@@ -14,6 +15,7 @@ export const handlers: Array<RequestHandler | WebSocketHandler> = [
   ...nftHandlers,
   ...favoriteHandlers,
   ...cartHandlers,
+  ...checkoutHandlers,
   ...profileHandlers,
   ...walletHandlers,
   realtimeHandler,

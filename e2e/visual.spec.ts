@@ -48,6 +48,29 @@ test('Carrinho', async ({ page, catalog }) => {
   await expect(page).toHaveScreenshot('carrinho-pagina-inteira.png', { fullPage: true })
 })
 
+test('Pagamento', async ({ page, catalog }) => {
+  await catalog.goto('/carrinho')
+  await expect(page.getByText('Seu carrinho está vazio')).toBeVisible()
+  await page.evaluate(async () => {
+    const headers = { 'Content-Type': 'application/json', 'X-Guest-Cart': localStorage.getItem('kurio.cart.guest') ?? '' }
+    for (const body of [
+      { nftId: 'emerald-ape-042', editionId: '1-50', quantity: 2 },
+      { nftId: 'ivory-baron-088', editionId: '1-50', quantity: 1 },
+    ]) {
+      await fetch('/api/cart/items', { method: 'POST', headers, body: JSON.stringify(body) })
+    }
+  })
+  await page.reload()
+  await page.getByRole('link', { name: 'Conectar e finalizar' }).click()
+  await page.getByRole('textbox', { name: 'E-mail' }).fill('ana@kurio.dev')
+  await page.getByLabel('Senha', { exact: true }).fill('Kurio2026!')
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeVisible()
+  await waitForMedia(page)
+
+  await expect(page).toHaveScreenshot('pagamento-primeira-tela.png')
+})
+
 test('Detalhe do NFT', async ({ page, catalog }) => {
   await catalog.goto('/nft/emerald-ape-042')
   await expect(page.getByRole('region', { name: 'Mais desta coleção' }).getByRole('listitem')).toHaveCount(5)
