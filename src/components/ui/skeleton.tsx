@@ -1,4 +1,4 @@
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
 // Com `role` o skeleton é o próprio aviso de carregamento; sem ele é só decoração.
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {

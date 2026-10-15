@@ -44,7 +44,7 @@ export class CatalogPage {
   }
 
   async openFilters(): Promise<Locator> {
-    if (!this.isMobile) return this.page.getByRole('complementary', { name: 'Filtros do catálogo' })
+    if (!this.isMobile) return this.page.getByRole('region', { name: 'Filtros do catálogo' })
     await this.page.getByRole('button', { name: 'Abrir filtros' }).click()
     const sheet = this.page.getByRole('dialog', { name: 'Filtros' })
     await expect(sheet).toBeVisible()

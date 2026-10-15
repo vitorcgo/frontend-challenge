@@ -12,7 +12,7 @@ test.describe('desktop', () => {
 
   test('falha no destaque mostra "Tentar novamente" e recupera', async ({ page, catalog }) => {
     await catalog.goto('/', 'server-error')
-    const sidebar = page.getByRole('complementary', { name: 'Filtros do catálogo' })
+    const sidebar = page.getByRole('region', { name: 'Filtros do catálogo' })
     await expect(sidebar.getByText('Não foi possível carregar o NFT em destaque.')).toBeVisible({ timeout: 15_000 })
 
     await catalog.setScenario('fast')
@@ -33,7 +33,7 @@ test.describe('desktop', () => {
     await expect(page.getByRole('tab', { name: 'Novos lançamentos' })).toHaveAttribute('aria-selected', 'true')
 
     await page.getByRole('link', { name: /Explorar.*Arte digital/ }).click()
-    const sidebar = page.getByRole('complementary', { name: 'Filtros do catálogo' })
+    const sidebar = page.getByRole('region', { name: 'Filtros do catálogo' })
     await expect(sidebar.getByRole('button', { name: /^Arte digital/ })).toHaveAttribute('aria-pressed', 'true')
     await expect(catalog.cards).toHaveCount(6)
   })

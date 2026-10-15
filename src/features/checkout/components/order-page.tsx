@@ -190,9 +190,16 @@ function Rejected({ order }: { order: Order }) {
 export function OrderPage({ id }: { id: string }) {
   const navigate = useNavigate()
   const order = useOrder(id)
-  useDocumentTitle(order.data?.status === 'confirmed' ? 'Pedido confirmado' : 'Pedido')
-
   const notFound = isApiError(order.error) && (order.error.status === 404 || order.error.status === 403)
+  useDocumentTitle(
+    order.data?.status === 'confirmed'
+      ? 'Pedido confirmado'
+      : order.data?.status === 'rejected'
+        ? 'Pagamento não concluído'
+        : notFound
+          ? 'Pedido não encontrado'
+          : 'Pedido',
+  )
   useEffect(() => {
     if (isApiError(order.error) && order.error.status === 401) void navigate({ to: '/entrar', search: { redirect: `/pedido/${id}` }, replace: true })
   }, [order.error, navigate, id])

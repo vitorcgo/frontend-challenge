@@ -69,7 +69,7 @@ test.describe('desktop', () => {
 
   test('filtros da barra lateral funcionam pelo teclado', async ({ page, catalog }) => {
     await catalog.goto()
-    const music = page.getByRole('complementary', { name: 'Filtros do catálogo' }).getByRole('button', { name: /^Música/ })
+    const music = page.getByRole('region', { name: 'Filtros do catálogo' }).getByRole('button', { name: /^Música/ })
     await music.focus()
     await page.keyboard.press('Enter')
     await expect(music).toHaveAttribute('aria-pressed', 'true')

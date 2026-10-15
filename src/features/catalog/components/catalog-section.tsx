@@ -152,11 +152,11 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
         Mercado de NFTs
       </h2>
       {hasSidebar && (
-        <aside aria-label="Filtros do catálogo" className="flex flex-col gap-6">
+        <section aria-label="Filtros do catálogo" className="flex flex-col gap-6">
           <Suspense fallback={<div className="h-[640px] bg-surface-card" />}>
             <CatalogSidebar search={search} facets={data?.facets} />
           </Suspense>
-        </aside>
+        </section>
       )}
       <Tabs value={search.tab} onValueChange={(tab) => update({ tab: tab as NftTab })} className="min-w-0 gap-6 md:gap-8">
         {search.search && (

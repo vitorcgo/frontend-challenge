@@ -49,25 +49,27 @@ function OrderItems({ cart }: { cart: Cart }) {
 function Summary({ cart, large }: { cart: Cart; large?: boolean }) {
   const { summary } = cart
   return (
-    <dl className="flex flex-col gap-2 text-sm text-cream">
-      <div className="flex justify-between gap-3">
-        <dt>Subtotal</dt>
-        <dd className="text-base">{formatEth(summary.subtotal)}</dd>
-      </div>
-      <div className="flex justify-between gap-3">
-        <dt>{cart.coupon?.description ?? 'Desconto do lançamento'}</dt>
-        <dd>(-) {formatEth(summary.discount)}</dd>
-      </div>
-      <div className="flex justify-between gap-3">
-        <dt>Taxa de rede</dt>
-        <dd className="text-base">{formatEth(summary.networkFee)}</dd>
-      </div>
+    <div className="flex flex-col gap-2 text-sm text-cream">
+      <dl className="flex flex-col gap-2">
+        <div className="flex justify-between gap-3">
+          <dt>Subtotal</dt>
+          <dd className="text-base">{formatEth(summary.subtotal)}</dd>
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt>{cart.coupon?.description ?? 'Desconto do lançamento'}</dt>
+          <dd>(-) {formatEth(summary.discount)}</dd>
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt>Taxa de rede</dt>
+          <dd className="text-base">{formatEth(summary.networkFee)}</dd>
+        </div>
+      </dl>
       <p className="text-center text-xs text-accent-text">Taxa estimada</p>
-      <div className={cn('flex justify-between gap-3 border-t border-brand/30 pt-3 font-bold', large && 'text-lg')}>
+      <dl className={cn('flex justify-between gap-3 border-t border-brand/30 pt-3 font-bold', large && 'text-lg')}>
         <dt>Total</dt>
         <dd className="text-accent-text">{formatEth(summary.total)}</dd>
-      </div>
-    </dl>
+      </dl>
+    </div>
   )
 }
 
@@ -312,12 +314,12 @@ export function CheckoutPage() {
           </h2>
           {form}
         </section>
-        <aside aria-label="Resumo do pedido" className="flex w-full flex-col gap-4 lg:w-[406px] lg:shrink-0">
+        <section aria-label="Resumo do pedido" className="flex w-full flex-col gap-4 lg:w-[406px] lg:shrink-0">
           <h2 className="text-body font-bold text-cream">Seus NFTs</h2>
           <OrderItems cart={cart.data} />
           <p className="text-center text-xs text-cream">
             Tem um código promocional?{' '}
-            <Link to="/carrinho" className="rounded-sm text-accent-text underline-offset-4 hover:underline">
+            <Link to="/carrinho" className="rounded-sm text-accent-text underline underline-offset-4 hover:text-cream">
               Aplique aqui
             </Link>
           </p>
@@ -327,7 +329,7 @@ export function CheckoutPage() {
           <Button ref={confirmRef} onClick={() => void confirm()} disabled={busy} className="h-10 rounded-[3px] text-body font-bold">
             {busy ? 'Conectando carteira...' : 'Confirmar compra'}
           </Button>
-        </aside>
+        </section>
       </div>
       {review}
     </div>

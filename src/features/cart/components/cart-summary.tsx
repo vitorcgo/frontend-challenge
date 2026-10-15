@@ -99,9 +99,18 @@ function CouponForm({ cart, mobile }: { cart: Cart; mobile: boolean }) {
   )
 }
 
-function Row({ label, value, strong, small }: { label: string; value: string; strong?: boolean; small?: boolean }) {
+interface RowProps {
+  label: string
+  value: string
+  strong?: boolean
+  small?: boolean
+  note?: string
+  className?: string
+}
+
+function Row({ label, value, strong, small, note, className }: RowProps) {
   return (
-    <div className="flex items-start justify-between gap-3">
+    <div className={cn('flex items-start justify-between gap-3', className)}>
       <dt className={cn('text-body', strong ? 'leading-4 font-bold text-cream' : 'text-cream')}>{label}</dt>
       <dd
         className={cn(
@@ -110,6 +119,7 @@ function Row({ label, value, strong, small }: { label: string; value: string; st
         )}
       >
         {value}
+        {note && <span className="mt-3 block text-xs leading-4 font-normal text-accent-text">{note}</span>}
       </dd>
     </div>
   )
@@ -147,15 +157,8 @@ export function CartSummary({ cart, mobile, blocked }: CartSummaryProps) {
       <dl className="flex flex-col gap-3" aria-live="polite">
         <Row label="Subtotal" value={formatEth(summary.subtotal)} />
         <Row label={cart.coupon ? cart.coupon.description : 'Desconto do lançamento'} value={`(-) ${formatEth(summary.discount)}`} small />
-        <div className="flex flex-col items-end gap-3">
-          <div className="w-full">
-            <Row label="Taxa de rede" value={formatEth(summary.networkFee)} />
-          </div>
-          <p className="text-xs leading-4 text-accent-text">Taxa estimada</p>
-        </div>
-        <div className="pt-3">
-          <Row label="Total" value={formatEth(summary.total)} strong />
-        </div>
+        <Row label="Taxa de rede" value={formatEth(summary.networkFee)} note="Taxa estimada" />
+        <Row label="Total" value={formatEth(summary.total)} strong className="pt-3" />
       </dl>
 
       <div className="flex flex-col items-center gap-3">
