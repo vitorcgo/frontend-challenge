@@ -77,9 +77,17 @@ test('falha ao favoritar desfaz a marcação e avisa; nova tentativa funciona', 
 test('cliques seguidos terminam no estado do último clique', async ({ page, catalog }) => {
   await loginAndOpen(page, catalog, 'ana@kurio.dev', SAGE)
   await catalog.setScenario('variable-latency')
+  let settled = 0
+  page.on('response', (response) => {
+    const method = response.request().method()
+    if (response.url().includes('/api/favorites/') && (method === 'PUT' || method === 'DELETE')) settled++
+  })
+
   for (let i = 0; i < 5; i++) await favoriteButton(page).click()
   await expect(favoriteButton(page)).toHaveAttribute('aria-pressed', 'true')
-  await page.waitForTimeout(2_500)
+
+  // As 5 requisições vão em fila, com até 2 s cada; só depois delas o servidor tem o estado final.
+  await expect.poll(() => settled, { timeout: 15_000 }).toBe(5)
   await expect(favoriteButton(page)).toHaveAttribute('aria-pressed', 'true')
 
   await catalog.setScenario('fast')
