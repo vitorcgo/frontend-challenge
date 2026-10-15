@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/",
+    "isRepresentativeRun": false,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_21_50.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_21_50.report.json",
+    "summary": {
+      "performance": 0.8,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/",
+    "isRepresentativeRun": false,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_22_14.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_22_14.report.json",
+    "summary": {
+      "performance": 0.83,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/nft/emerald-ape-042",
+    "isRepresentativeRun": false,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_23_17.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_23_17.report.json",
+    "summary": {
+      "performance": 0.82,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/nft/emerald-ape-042",
+    "isRepresentativeRun": false,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_23_36.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_23_36.report.json",
+    "summary": {
+      "performance": 0.83,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/",
+    "isRepresentativeRun": true,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_22_36.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app--2026_10_15_12_22_36.report.json",
+    "summary": {
+      "performance": 0.78,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  },
+  {
+    "url": "https://frontend-challenge-ten-orcin.vercel.app/nft/emerald-ape-042",
+    "isRepresentativeRun": true,
+    "htmlPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_22_58.report.html",
+    "jsonPath": "V:\\frontend-challenge\\lighthouse\\reports\\deploy-mobile\\frontend_challenge_ten_orcin_vercel_app-nft_emerald_ape_042-2026_10_15_12_22_58.report.json",
+    "summary": {
+      "performance": 0.82,
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1
+    }
+  }
+]
