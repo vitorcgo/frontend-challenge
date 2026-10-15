@@ -17,15 +17,20 @@ async function enableMocking() {
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Root element not found')
 
-// Libera a API mesmo se os mocks falharem, para a tela mostrar o erro em vez de esperar para sempre.
-enableMocking()
-  .catch((error: unknown) => console.error('[mocks] failed to start', error))
-  .finally(markApiReady)
-
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>
   </StrictMode>,
+)
+
+// Os mocks começam depois do primeiro quadro: a tela aparece sem disputar a CPU com eles.
+// Libera a API mesmo se falharem, para a tela mostrar o erro em vez de esperar para sempre.
+requestAnimationFrame(() =>
+  setTimeout(() => {
+    enableMocking()
+      .catch((error: unknown) => console.error('[mocks] failed to start', error))
+      .finally(markApiReady)
+  }),
 )

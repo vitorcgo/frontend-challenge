@@ -1,53 +1,42 @@
 import { Link } from '@tanstack/react-router'
-import { useId, type ReactNode } from 'react'
-import { NFT_PAGE_SIZE, NFT_SORTS, NFT_TABS, type NftSort, type NftTab } from '@/api/contracts'
+import { Suspense, useId, type ReactNode } from 'react'
+import { NFT_PAGE_SIZE, NFT_TABS, type NftSort, type NftTab } from '@/api/contracts'
 import { isApiError } from '@/api/errors'
 import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDelayedFlag } from '@/hooks/use-delayed-flag'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { pluralize } from '@/lib/format'
+import { lazyWithPreload } from '@/lib/lazy'
 import { cn } from '@/lib/utils'
 import { SORT_LABELS, TAB_LABELS } from '../labels'
 import { CATALOG_SECTION_ID } from '../focus-results'
 import { hasActiveFilters, type CatalogSearch } from '../search'
 import { useCatalogQuery, useUpdateCatalogSearch } from '../use-catalog-search'
-import { CatalogFilters } from './catalog-filters'
 import { CatalogFiltersSheet } from './catalog-filters-sheet'
-import { FeaturedNft } from './featured-nft'
 import { CatalogPagination } from './catalog-pagination'
 import { NftCard, NftCardSkeleton } from './nft-card'
+import { EXACT_LOCATION } from '@/lib/link-options'
 
 const SLOW_REQUEST_MS = 4000
 
-function SortSelect({ value, onChange }: { value: NftSort; onChange: (sort: NftSort) => void }) {
-  const labelId = useId()
+// Select e Slider (Radix) saem do carregamento inicial; no mobile só são baixados se a gaveta for aberta.
+const SortSelect = lazyWithPreload(() => import('./sort-select'))
+const CatalogSidebar = lazyWithPreload(() => import('./catalog-sidebar'))
+
+/** Ocupa o mesmo espaço da ordenação enquanto ela carrega, para nada pular na tela. */
+function SortSelectPlaceholder({ value }: { value: NftSort }) {
   return (
-    <div className="flex items-center gap-3">
-      <span id={labelId} className="text-body whitespace-nowrap text-cream">
-        Ordenar por:
+    <div aria-hidden className="flex items-center gap-3 text-body whitespace-nowrap text-cream">
+      <span>Ordenar por:</span>
+      <span className="flex items-center gap-3">
+        {SORT_LABELS[value]}
+        <Icon name="arrow-down-2" />
       </span>
-      <Select value={value} onValueChange={(next) => onChange(next as NftSort)}>
-        <SelectTrigger
-          aria-labelledby={labelId}
-          className="h-auto gap-3 rounded-sm border-0 bg-transparent p-0 text-body text-cream shadow-none hover:text-accent-text"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent position="popper" align="end" className="border-line bg-surface-raised text-cream">
-          {NFT_SORTS.map((sort) => (
-            <SelectItem key={sort} value={sort} className="text-body focus:bg-surface-dark focus:text-accent-text">
-              {SORT_LABELS[sort]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </div>
   )
 }
-
 function StateMessage({ title, text, action }: { title: string; text: string; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-lg border border-line px-6 py-16 text-center">
@@ -64,6 +53,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
   const { data, isPending, isError, error, isFetching, isPlaceholderData, refetch } = query
   const isSlow = useDelayedFlag(isFetching, SLOW_REQUEST_MS)
   const hasSidebar = useMediaQuery('(min-width: 1280px)')
+  const hasToolbarSort = useMediaQuery('(min-width: 768px)')
   const panelHeadingId = useId()
 
 
@@ -102,7 +92,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
         text={`A busca atual tem ${pluralize(data.totalPages, 'página', 'páginas')}.`}
         action={
           <Button asChild className="rounded-sm font-bold">
-            <Link to="/" search={(prev) => ({ ...prev, page: 1 })} hash="mercado">
+            <Link to="/" search={(prev) => ({ ...prev, page: 1 })} hash="mercado" activeOptions={EXACT_LOCATION}>
               Ir para a primeira página
             </Link>
           </Button>
@@ -121,7 +111,7 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
         action={
           filtered && (
             <Button asChild className="rounded-sm font-bold">
-              <Link to="/" search={(prev) => ({ tab: prev.tab, sort: prev.sort })} hash="mercado">
+              <Link to="/" search={(prev) => ({ tab: prev.tab, sort: prev.sort })} hash="mercado" activeOptions={EXACT_LOCATION}>
                 Limpar busca e filtros
               </Link>
             </Button>
@@ -167,8 +157,9 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
       {/* Só monta a barra lateral onde ela aparece: abaixo de 1280 px os filtros vivem na gaveta. */}
       {hasSidebar && (
         <aside aria-label="Filtros do catálogo" className="flex flex-col gap-6">
-          <CatalogFilters search={search} facets={data?.facets} className="bg-surface-card p-5" />
-          <FeaturedNft />
+          <Suspense fallback={<div className="h-[640px] bg-surface-card" />}>
+            <CatalogSidebar search={search} facets={data?.facets} />
+          </Suspense>
         </aside>
       )}
       <Tabs value={search.tab} onValueChange={(tab) => update({ tab: tab as NftTab })} className="min-w-0 gap-6 md:gap-8">
@@ -204,7 +195,11 @@ export function CatalogSection({ search }: { search: CatalogSearch }) {
             ))}
           </TabsList>
           <div className="hidden items-center gap-6 md:flex">
-            <SortSelect value={search.sort} onChange={(sort) => update({ sort })} />
+            {hasToolbarSort && (
+              <Suspense fallback={<SortSelectPlaceholder value={search.sort} />}>
+                <SortSelect value={search.sort} onChange={(sort) => update({ sort })} />
+              </Suspense>
+            )}
             <div className="xl:hidden">
               <CatalogFiltersSheet
                 trigger={

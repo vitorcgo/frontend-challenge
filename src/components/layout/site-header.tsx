@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { HeaderSearch } from './header-search'
 import { cn } from '@/lib/utils'
 import { isMarketPath, paths } from './routes'
+import { EXACT_LOCATION, EXACT_PATH } from '@/lib/link-options'
 
 type NavItem = { label: string } & ({ to: '/'; hash?: string; active: boolean } | { to?: undefined })
 
@@ -30,6 +31,7 @@ function NavLink({ item }: { item: NavItem }) {
       <Link
         to={item.to}
         hash={item.hash}
+        activeOptions={item.hash ? EXACT_LOCATION : EXACT_PATH}
         aria-current={item.active ? 'page' : undefined}
         className={cn(
           'rounded-sm text-base whitespace-nowrap transition-colors hover:text-accent-text',
@@ -57,7 +59,7 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
   return (
     <header className="mx-auto hidden w-full max-w-[1200px] px-6 pt-6 md:block xl:px-0">
       <div className="flex items-start justify-between gap-6">
-        <Link to="/" className="mt-2 shrink-0 rounded-sm text-sm font-bold tracking-logo text-cream xl:w-[160px]">
+        <Link to="/" activeOptions={EXACT_PATH} className="mt-2 shrink-0 rounded-sm text-sm font-bold tracking-logo text-cream xl:w-[160px]">
           KURIO
         </Link>
 

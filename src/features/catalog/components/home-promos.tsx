@@ -3,6 +3,7 @@ import arcs from '@/assets/decorations/promo-arcs.svg'
 import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
 import type { CatalogSearch } from '../search'
+import { EXACT_LOCATION } from '@/lib/link-options'
 
 interface Promo {
   title: [string, string]
@@ -52,7 +53,7 @@ export function HomePromos() {
             </h2>
             <p className="max-w-[263px] text-sm leading-6 text-subtle-text">{promo.text}</p>
             <Button asChild className="mt-auto h-10 w-[140px] gap-2 rounded-lg text-sm leading-5 font-medium">
-              <Link to="/" search={promo.search} hash="mercado">
+              <Link to="/" search={promo.search} hash="mercado" activeOptions={EXACT_LOCATION}>
                 Explorar
                 <Icon name="arrow-right" />
                 <span className="sr-only">: {promo.title.join(' ')}</span>

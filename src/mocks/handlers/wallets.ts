@@ -1,12 +1,10 @@
 import { http, HttpResponse } from 'msw'
 import {
-  walletConnectSchema,
-  walletCreateSchema,
-  walletInputSchema,
   type Wallet,
   type WalletConnection,
   type WalletsResponse,
 } from '@/api/contracts'
+import { walletConnectSchema, walletCreateSchema, walletInputSchema } from '@/api/schemas'
 import { read, write, type WalletRecord } from '../db'
 import { ApiFailure, API, newId, noContent, notFound, nowIso, param, readJson, requireSession, route } from '../http'
 import { toWallet } from '../mappers'

@@ -2,13 +2,13 @@ import { http, HttpResponse } from 'msw'
 import {
   NETWORKS,
   NFT_CATEGORIES,
-  nftListQuerySchema,
   type FeaturedNftResponse,
   type Network,
   type Nft,
   type NftCategory,
   type NftListResponse,
 } from '@/api/contracts'
+import { nftListQuerySchema } from '@/api/schemas'
 import { compareEth } from '@/lib/eth'
 import { read } from '../db'
 import { FEATURED_NFT, type NftRecord } from '../fixtures/nfts'

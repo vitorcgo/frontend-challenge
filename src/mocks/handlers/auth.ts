@@ -1,10 +1,6 @@
 import { http, HttpResponse } from 'msw'
-import {
-  loginRequestSchema,
-  registerRequestSchema,
-  type CurrentSession,
-  type Session,
-} from '@/api/contracts'
+import type { CurrentSession, Session } from '@/api/contracts'
+import { loginRequestSchema, registerRequestSchema } from '@/api/schemas'
 import { read, write, type SessionRecord, type UserRecord } from '../db'
 import { ApiFailure, API, fieldConflict, newId, noContent, nowIso, readJson, requireSession, route } from '../http'
 import { toSessionUser } from '../mappers'

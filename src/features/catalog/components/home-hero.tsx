@@ -3,6 +3,7 @@ import heroShape from '@/assets/decorations/mobile-hero-shape.svg'
 import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { EXACT_LOCATION } from '@/lib/link-options'
 
 const HERO_IMAGE = { small: '/images/nfts/monkey-varsity-480.webp', large: '/images/nfts/monkey-varsity-960.webp' }
 const HERO_THUMB = '/images/nfts/gorilla-bucket-hat-480.webp'
@@ -39,7 +40,7 @@ function DesktopHero() {
             </p>
           </div>
           <Button asChild className="h-10 w-[140px] rounded-lg text-base leading-5 font-bold">
-            <Link to="/" hash="mercado">
+            <Link to="/" hash="mercado" activeOptions={EXACT_LOCATION}>
               EXPLORAR
             </Link>
           </Button>
@@ -81,6 +82,7 @@ function MobileHero() {
           <Link
             to="/"
             hash="mercado"
+            activeOptions={EXACT_LOCATION}
             className="mt-1 flex w-fit items-center gap-2 rounded-sm text-xs leading-[14px] font-bold text-accent-text"
           >
             EXPLORAR

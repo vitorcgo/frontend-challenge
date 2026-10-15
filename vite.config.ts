@@ -12,8 +12,10 @@ export default defineConfig({
     tailwindcss(),
   ],
   resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, './src'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(import.meta.dirname, './src') },
+      // O MSW só usa o tough-cookie para cookies, que o app não usa; a versão mínima evita 257 KB do tldts.
+      { find: /^tough-cookie$/, replacement: path.resolve(import.meta.dirname, './src/mocks/shims/tough-cookie.ts') },
+    ],
   },
 })

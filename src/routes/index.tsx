@@ -4,10 +4,10 @@ import { HomeHero } from '@/features/catalog/components/home-hero'
 import { HomePromos } from '@/features/catalog/components/home-promos'
 import { MintJournal } from '@/features/catalog/components/mint-journal'
 import { MobileCatalogSearch } from '@/features/catalog/components/mobile-catalog-search'
-import { CATALOG_DEFAULTS, catalogSearchSchema } from '@/features/catalog/search'
+import { CATALOG_DEFAULTS, catalogSearchValidator } from '@/features/catalog/search'
 
 export const Route = createFileRoute('/')({
-  validateSearch: catalogSearchSchema,
+  validateSearch: catalogSearchValidator,
   search: { middlewares: [stripSearchParams(CATALOG_DEFAULTS)] },
   component: HomePage,
 })

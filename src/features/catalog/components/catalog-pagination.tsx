@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Icon } from '@/components/icon'
 import { cn } from '@/lib/utils'
+import { EXACT_LOCATION } from '@/lib/link-options'
 
 /** Páginas visíveis: sempre a primeira, a última e as vizinhas da atual. */
 function pageItems(current: number, total: number): Array<number | 'gap'> {
@@ -20,6 +21,7 @@ export function CatalogPagination({ page, totalPages }: { page: number; totalPag
       to="/"
       search={(prev) => ({ ...prev, page: target })}
       hash="mercado"
+      activeOptions={EXACT_LOCATION}
       aria-label={direction === 'prev' ? 'Página anterior' : 'Próxima página'}
       className={cn(box, 'border border-line text-cream hover:border-brand')}
     >
@@ -42,6 +44,7 @@ export function CatalogPagination({ page, totalPages }: { page: number; totalPag
                 to="/"
                 search={(prev) => ({ ...prev, page: item })}
                 hash="mercado"
+                activeOptions={EXACT_LOCATION}
                 aria-label={`Página ${item}`}
                 aria-current={item === page ? 'page' : undefined}
                 className={cn(

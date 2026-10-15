@@ -1,5 +1,4 @@
-import { z } from 'zod'
-import { compareEth, type EthAmount } from '@/lib/eth'
+import type { EthAmount } from '@/lib/eth'
 import type { IsoDateTime, Paginated } from './common'
 
 export const NFT_CATEGORIES = [
@@ -74,32 +73,19 @@ export interface Nft extends NftSummary {
   maxPerOrder: number
 }
 
-const csvList = <T extends readonly [string, ...string[]]>(values: T) =>
-  z
-    .union([z.enum(values), z.array(z.enum(values))])
-    .transform((value) => (Array.isArray(value) ? value : [value]))
-
-const ethParam = z.string().regex(/^\d+(\.\d{1,18})?$/, 'Valor em ETH inválido.')
-
-export const nftListQuerySchema = z
-  .object({
-    search: z.string().trim().max(80).optional(),
-    category: csvList(NFT_CATEGORIES).optional(),
-    network: csvList(NETWORKS).optional(),
-    priceMin: ethParam.optional(),
-    priceMax: ethParam.optional(),
-    collection: z.string().optional(),
-    tab: z.enum(NFT_TABS).default('all'),
-    sort: z.enum(NFT_SORTS).default('recent'),
-    page: z.coerce.number().int().min(1).default(1),
-    pageSize: z.coerce.number().int().min(1).max(36).default(NFT_PAGE_SIZE),
-  })
-  .refine((query) => !query.priceMin || !query.priceMax || compareEth(query.priceMin, query.priceMax) <= 0, {
-    path: ['priceMax'],
-    message: 'O preço máximo precisa ser maior ou igual ao mínimo.',
-  })
-export type NftListQuery = z.input<typeof nftListQuerySchema>
-
+/** Parâmetros de GET /api/nfts. Listas viram parâmetros repetidos na URL (?category=a&category=b). */
+export interface NftListQuery {
+  search?: string
+  category?: NftCategory | NftCategory[]
+  network?: Network | Network[]
+  priceMin?: EthAmount
+  priceMax?: EthAmount
+  collection?: string
+  tab?: NftTab
+  sort?: NftSort
+  page?: number
+  pageSize?: number
+}
 /** NFT escolhido pela curadoria para o bloco "NFT em destaque" da Início. */
 export interface FeaturedNftResponse {
   nft: NftSummary

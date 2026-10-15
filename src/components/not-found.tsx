@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { EXACT_PATH } from '@/lib/link-options'
 
 /** Estado não desenhado no Figma: segue o padrão visual das telas (fundo escuro, título em creme, botão laranja). */
 export function NotFound() {
@@ -11,7 +12,7 @@ export function NotFound() {
         O endereço que você acessou não existe ou foi removido. Volte ao início para continuar explorando.
       </p>
       <Button asChild size="lg" className="rounded-sm font-bold">
-        <Link to="/">Voltar ao início</Link>
+        <Link to="/" activeOptions={EXACT_PATH}>Voltar ao início</Link>
       </Button>
     </section>
   )

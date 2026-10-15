@@ -8,6 +8,7 @@ import socialTwitter from '@/assets/brands/social-twitter.svg'
 import socialYoutube from '@/assets/brands/social-youtube.svg'
 import { Button } from '@/components/ui/button'
 import { CATEGORY_LABELS } from '@/features/catalog/labels'
+import { EXACT_LOCATION } from '@/lib/link-options'
 
 const FEATURES = [
   { mark: 'W', title: 'Segurança da carteira', text: 'Proteja sua carteira e colecione arte digital verificada com confiança.' },
@@ -133,6 +134,7 @@ export function SiteFooter() {
                     to="/"
                     search={{ category: [category] }}
                     hash="mercado"
+                    activeOptions={EXACT_LOCATION}
                     className="rounded-sm hover:text-accent-text"
                   >
                     {CATEGORY_LABELS[category]}

@@ -4,6 +4,7 @@ import notch from '@/assets/decorations/tab-bar-notch.svg'
 import { Icon, type IconName } from '@/components/icon'
 import { cn } from '@/lib/utils'
 import { paths } from './routes'
+import { EXACT_PATH } from '@/lib/link-options'
 
 const itemClass =
   'absolute top-[59px] flex size-11 -translate-x-1/2 flex-col items-center justify-center gap-1 rounded-full'
@@ -28,7 +29,7 @@ function TabItem({ icon, label, href, active, left }: { icon: IconName; label: s
   )
   // Rotas que ainda não existem usam <a>; viram Link tipado quando a tela for criada.
   return href === paths.home ? (
-    <Link to="/" {...props}>
+    <Link to="/" activeOptions={EXACT_PATH} {...props}>
       {content}
     </Link>
   ) : (

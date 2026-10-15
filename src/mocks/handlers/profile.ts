@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
-import { avatarUpdateSchema, passwordChangeSchema, profileUpdateSchema, type Profile } from '@/api/contracts'
+import type { Profile } from '@/api/contracts'
+import { avatarUpdateSchema, passwordChangeSchema, profileUpdateSchema } from '@/api/schemas'
 import { read, write, type UserRecord } from '../db'
 import { ApiFailure, API, fieldConflict, noContent, nowIso, readJson, requireSession, route } from '../http'
 import { toProfile } from '../mappers'
