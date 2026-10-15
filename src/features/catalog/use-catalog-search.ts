@@ -1,22 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRouteApi, useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import { nftListQueryOptions } from './queries'
-import { toListQuery, type CatalogSearch } from './search'
+import { toListQuery, validateCatalogSearch, type CatalogSearch } from './search'
 
-const homeRoute = getRouteApi('/')
-
+/** Busca do catálogo na URL. Fora da Início (atrás do modal de login), cai nos valores padrão. */
 export function useCatalogSearch(): CatalogSearch {
-  return homeRoute.useSearch()
+  return validateCatalogSearch(useSearch({ strict: false }))
 }
 
 /** Qualquer mudança de busca, filtro, aba ou ordenação volta para a página 1 (§3). */
 export function useUpdateCatalogSearch() {
-  const navigate = useNavigate({ from: '/' })
+  const navigate = useNavigate()
   return useCallback(
     (patch: Partial<CatalogSearch>, options: { replace?: boolean } = {}) =>
       navigate({
-        search: (prev) => ({ ...prev, ...patch, page: 1 }),
+        to: '/',
+        search: (prev) => ({ ...validateCatalogSearch(prev), ...patch, page: 1 }),
         replace: options.replace,
         resetScroll: false,
       }),

@@ -1,12 +1,15 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Icon } from '@/components/icon'
 import { Button } from '@/components/ui/button'
-import { HeaderSearch } from './header-search'
-import { cn } from '@/lib/utils'
-import { isMarketPath, paths } from './routes'
+import { safeRedirect } from '@/features/auth/redirect'
+import { useLogout, useSession } from '@/features/auth/session'
 import { EXACT_LOCATION, EXACT_PATH } from '@/lib/link-options'
+import { cn } from '@/lib/utils'
+import { HeaderSearch } from './header-search'
+import { isMarketPath, paths } from './routes'
 
-type NavItem = { label: string } & ({ to: '/'; hash?: string; active: boolean } | { to?: undefined })
+/** `active` é o destaque visual do Figma; `current` marca a página atual para leitores de tela. */
+type NavItem = { label: string } & ({ to: '/'; hash?: string; active: boolean; current: boolean } | { to?: undefined })
 
 function NavLink({ item }: { item: NavItem }) {
   const underline = (active: boolean) => (
@@ -32,7 +35,7 @@ function NavLink({ item }: { item: NavItem }) {
         to={item.to}
         hash={item.hash}
         activeOptions={item.hash ? EXACT_LOCATION : EXACT_PATH}
-        aria-current={item.active ? 'page' : undefined}
+        aria-current={item.current ? 'page' : undefined}
         className={cn(
           'rounded-sm text-base whitespace-nowrap transition-colors hover:text-accent-text',
           item.active ? 'font-bold text-accent-text' : 'text-cream',
@@ -45,13 +48,49 @@ function NavLink({ item }: { item: NavItem }) {
   )
 }
 
+/** "Entrar" leva ao login e volta para esta tela; logado, o mesmo botão vira "Sair" (o ícone do Figma já é o de saída). */
+function AccountActions() {
+  const { user, isLoading } = useSession()
+  const logout = useLogout()
+  const href = useRouterState({ select: (state) => state.location.href })
+  const buttonClass = 'h-[35px] w-[100px] gap-1 rounded-lg text-base'
+
+  // Conferindo a sessão salva: reserva o espaço do botão sem mostrar "Entrar" por engano.
+  if (isLoading) return <span aria-hidden className="h-[35px] w-[100px]" />
+
+  if (user) {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="max-w-[140px] truncate text-sm text-cream" title={user.displayName}>
+          {user.displayName}
+        </span>
+        <Button onClick={() => logout.mutate()} disabled={logout.isPending} className={buttonClass}>
+          <Icon name="logout" />
+          Sair
+        </Button>
+      </div>
+    )
+  }
+
+  const redirect = safeRedirect(href)
+  return (
+    <Button asChild className={buttonClass}>
+      <Link to="/entrar" search={redirect ? { redirect } : {}}>
+        <Icon name="logout" />
+        Entrar
+      </Link>
+    </Button>
+  )
+}
+
 export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const market = isMarketPath(pathname)
 
   const items: NavItem[] = [
-    { label: 'Início', to: '/', active: !market && pathname === paths.home },
-    { label: 'Mercado', to: '/', hash: 'mercado', active: market },
+    // No Figma, "Início" fica destacado também em Entrar, Criar conta, Perfil e Carteiras.
+    { label: 'Início', to: '/', active: !market, current: pathname === paths.home },
+    { label: 'Mercado', to: '/', hash: 'mercado', active: market, current: false },
     { label: 'Criadores' },
     { label: 'Aprenda' },
   ]
@@ -88,12 +127,7 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
               </span>
             )}
           </a>
-          <Button asChild className="h-[35px] w-[100px] gap-1 rounded-lg text-base">
-            <a href={paths.login}>
-              <Icon name="logout" />
-              Entrar
-            </a>
-          </Button>
+          <AccountActions />
         </div>
       </div>
       {/* Linha de 0,3 px do Figma; abaixo de 1 px o navegador não desenha, então 1 px com 30% de opacidade. */}

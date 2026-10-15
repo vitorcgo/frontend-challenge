@@ -2,10 +2,12 @@ import { Link, useRouterState } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import notch from '@/assets/decorations/tab-bar-notch.svg'
 import { Icon, type IconName } from '@/components/icon'
+import { safeRedirect } from '@/features/auth/redirect'
+import { useSession } from '@/features/auth/session'
+import { EXACT_PATH } from '@/lib/link-options'
 import { cn } from '@/lib/utils'
 import { useMobileBuyBarActive } from './mobile-buy-bar-store'
 import { paths } from './routes'
-import { EXACT_PATH } from '@/lib/link-options'
 
 const itemClass =
   'absolute top-[59px] flex size-11 -translate-x-1/2 flex-col items-center justify-center gap-1 rounded-full'
@@ -15,7 +17,9 @@ const ActiveDot = ({ active }: { active: boolean }) => (
   <span aria-hidden className={cn('size-1 rounded-full', active ? 'bg-accent-text' : 'bg-transparent')} />
 )
 
-function TabItem({ icon, label, href, active, left }: { icon: IconName; label: string; href: string; active: boolean; left: string }) {
+type TabTarget = { to: '/' } | { to: '/entrar'; redirect?: string } | { href: string }
+
+function TabItem({ icon, label, target, active, left }: { icon: IconName; label: string; target: TabTarget; active: boolean; left: string }) {
   const props = {
     'aria-current': active ? ('page' as const) : undefined,
     className: cn(itemClass, active ? 'text-accent-text' : 'text-subtle-text'),
@@ -28,23 +32,39 @@ function TabItem({ icon, label, href, active, left }: { icon: IconName; label: s
       <ActiveDot active={active} />
     </>
   )
-  // Rotas que ainda não existem usam <a>; viram Link tipado quando a tela for criada.
-  return href === paths.home ? (
+  if ('href' in target) {
+    // Rotas que ainda não existem usam <a>; viram Link tipado quando a tela for criada.
+    return (
+      <a href={target.href} {...props}>
+        {content}
+      </a>
+    )
+  }
+  if (target.to === '/entrar') {
+    return (
+      <Link to="/entrar" search={target.redirect ? { redirect: target.redirect } : {}} activeOptions={EXACT_PATH} {...props}>
+        {content}
+      </Link>
+    )
+  }
+  return (
     <Link to="/" activeOptions={EXACT_PATH} {...props}>
       {content}
     </Link>
-  ) : (
-    <a href={href} {...props}>
-      {content}
-    </a>
   )
 }
 
 /** Navegação do mobile (Figma "Tab Bar"). Telas a partir de 768 px usam o cabeçalho. */
 export function MobileTabBar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const href = useRouterState({ select: (state) => state.location.href })
   const buyBarActive = useMobileBuyBarActive()
+  const { user } = useSession()
   if (buyBarActive) return null
+
+  // Sem sessão, "Perfil" leva ao login e volta para esta tela depois.
+  const profileTarget: TabTarget = user ? { href: paths.profile } : { to: '/entrar', redirect: safeRedirect(href) }
+  const onAccountPage = [paths.profile, paths.login, paths.register].some((path) => pathname.startsWith(path))
 
   return (
     <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-40 h-[126px] md:hidden">
@@ -64,7 +84,7 @@ export function MobileTabBar() {
         <Icon name="scan" label="Escanear NFT (disponível em breve)" />
       </span>
 
-      <TabItem icon="home" label="Início" href={paths.home} active={pathname === paths.home} left="11.1%" />
+      <TabItem icon="home" label="Início" target={{ to: '/' }} active={pathname === paths.home} left="11.1%" />
       <span
         role="button"
         aria-disabled="true"
@@ -74,14 +94,8 @@ export function MobileTabBar() {
       >
         <Icon name="heart-filled" label="Lista de interesse (disponível em breve)" />
       </span>
-      <TabItem icon="shop" label="Carrinho" href={paths.cart} active={pathname.startsWith(paths.cart)} left="72.95%" />
-      <TabItem
-        icon="user-nav"
-        label="Perfil"
-        href={paths.profile}
-        active={pathname.startsWith(paths.profile) || pathname.startsWith(paths.login)}
-        left="87.9%"
-      />
+      <TabItem icon="shop" label="Carrinho" target={{ href: paths.cart }} active={pathname.startsWith(paths.cart)} left="72.95%" />
+      <TabItem icon="user-nav" label="Perfil" target={profileTarget} active={onAccountPage} left="87.9%" />
     </nav>
   )
 }

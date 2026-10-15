@@ -2,6 +2,7 @@
 export const paths = {
   home: '/',
   login: '/entrar',
+  register: '/cadastro',
   cart: '/carrinho',
   profile: '/perfil',
 } as const

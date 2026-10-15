@@ -1,6 +1,9 @@
 // Token da sessão no localStorage para a sessão sobreviver ao refresh (§3 do enunciado).
 const STORAGE_KEY = 'kurio.session.token'
 
+const listeners = new Set<() => void>()
+const notify = () => listeners.forEach((listener) => listener())
+
 export function getSessionToken(): string | null {
   try {
     return localStorage.getItem(STORAGE_KEY)
@@ -16,4 +19,31 @@ export function setSessionToken(token: string | null): void {
   } catch {
     // Sem armazenamento: a sessão vale só até o refresh.
   }
+  notify()
+}
+
+/** Avisa quando o token muda, inclusive por outra aba (login ou logout em outra janela). */
+export function subscribeSessionToken(listener: () => void): () => void {
+  listeners.add(listener)
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY) listener()
+  }
+  window.addEventListener('storage', onStorage)
+  return () => {
+    listeners.delete(listener)
+    window.removeEventListener('storage', onStorage)
+  }
+}
+
+type InvalidSessionListener = (reason: 'expired' | 'invalid') => void
+const invalidListeners = new Set<InvalidSessionListener>()
+
+/** Quem cuida da sessão na interface escuta aqui; o cliente HTTP só avisa. */
+export function onInvalidSession(listener: InvalidSessionListener): () => void {
+  invalidListeners.add(listener)
+  return () => invalidListeners.delete(listener)
+}
+
+export function reportInvalidSession(reason: 'expired' | 'invalid'): void {
+  invalidListeners.forEach((listener) => listener(reason))
 }
